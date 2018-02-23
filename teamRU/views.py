@@ -4,5 +4,5 @@ from teamRU import app
 
 @app.route('/', methods=['GET'])
 def main():
-    return render_template('index.html')
+    return render_template('home.html')
 

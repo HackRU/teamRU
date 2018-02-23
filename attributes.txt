@@ -3,7 +3,7 @@ Threads:
 1) Thread ID
 2) Creator ID
 3) Title
-4) Subject line
+4) Description
 5) Keywords (stored as comma-separated string)
 
 User:
@@ -27,5 +27,5 @@ Comments:
 Upvote:
 
 1) Thread ID
-2) Creation ID
+2) Creator ID
 
