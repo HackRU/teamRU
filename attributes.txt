@@ -5,6 +5,7 @@ Threads:
 3) Title
 4) Description
 5) Keywords (stored as comma-separated string)
+6) Created
 
 User:
 
