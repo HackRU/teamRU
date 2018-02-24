@@ -12,6 +12,7 @@ User:
 1) User ID (rendered from LCS)
 2) Slack account
 3) Threads joined
+4) Hash code
 
 Joined:
 
@@ -29,4 +30,5 @@ Upvote:
 
 1) Thread ID
 2) User ID
+
 
