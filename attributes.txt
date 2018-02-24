@@ -1,7 +1,7 @@
 Threads:
 
 1) Thread ID
-2) Creator ID
+2) User ID
 3) Title
 4) Description
 5) Keywords (stored as comma-separated string)
@@ -15,7 +15,7 @@ User:
 Joined:
 
 1) Thread ID
-2) Creator ID
+2) User ID
 3) Joiner IDs (allows 3 more)
 
 Comments:
@@ -27,5 +27,5 @@ Comments:
 Upvote:
 
 1) Thread ID
-2) Creator ID
+2) User ID
 
