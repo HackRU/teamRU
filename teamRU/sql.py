@@ -9,11 +9,18 @@ def connect():
     return connect
 
 def InsertQuery(query:str, x):
+    ret = 0
     con = connect()
-    with con.cursor() as cursor:
-        cursor.execute(query,x)
+    try:
+        with con.cursor() as cursor:
+            cursor.execute(query,x)
+            ret = 1
+    except:
+        con.close()
+        return ret
     con.commit()
     con.close()
+    return ret
 def SelectQuery(query:str, x = None, one:bool = True)->dict:
     con = connect()
     with con.cursor() as cursor:
