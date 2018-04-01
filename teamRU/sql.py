@@ -1,11 +1,10 @@
 import csv
 import pymysql
-import config
+from teamRU import config
 import datetime
 import sys
-from abrev import abrev 
 def connect():
-    connect = pymysql.connect(host = config.host, user = config.username, password = config.password, db = "DS", cursorclass = pymysql.cursors.DictCursor)
+    connect = pymysql.connect(host = config.host, user = config.username, password = config.password, db = "teamru", cursorclass = pymysql.cursors.DictCursor)
     return connect
 
 def InsertQuery(query:str, x):

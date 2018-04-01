@@ -1,14 +1,29 @@
-<html>
-	<head>
-	</head>
-	<body>
-		<h1>Wow this is a website wow!</h1>
-    <p>wow this text small wow</p>
-    <a href="/pics">PICS</a>
-    <form method="get" actions="/pics">
-      <button type="button">Click Me!</button>
+<html>  
+  <head>
+  </head>
+  <body>
+    {% if error %}
+      <p color="r">{{error}}</p>
+    {% endif %}
+    <form action="/logoff" method="GET">
+      <button 
+        name="LogOff" type="submit">LogOff
+      </button>
     </form>
-	</body>
-
-
+    <form action="/login" method="POST">
+      Slack Username:<br>
+      <input type="text" name="user"><br>
+      Password:</br>
+      <input type="password" name="password"><br>
+      <button type="submit" value="Submit">
+        Login
+      </button>
+    </form>
+    <br><br>
+    <form action="/register" method="GET">
+      <button type="submit" value="Submit">
+        Register
+      </button>
+    </form>
+  </body>
 </html>

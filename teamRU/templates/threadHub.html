@@ -1,0 +1,20 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <form action="\threadHub" method="POST">
+      <input type="text" name="search" placeholder="Query Keywords Separated by Commas">
+      <button type="submit">
+        Query
+      </button>
+        {% for x in results %}
+         <p>{{x}}</p>
+         <br>
+        {% endfor %}
+    </form>
+  </body>
+
+
+
+
+</html>

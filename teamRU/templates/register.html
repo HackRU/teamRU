@@ -1,0 +1,16 @@
+<html>
+  <head>
+  </head>
+  <body>
+   {% if error %}
+    <p>* ${{error}}</p>
+   {% endif %}
+   <form action="/register" method="POST">
+     Username: <input type="text" name="user" placeholder="HackRU Username">
+     Slack: <input type="text" name="slack" placeholder="Slack Username">
+     Password: <input type="password" name="password">
+     <input type="submit" name="Submit">
+   </form>
+
+  </body>
+</html>
