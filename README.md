@@ -8,15 +8,15 @@ The mind of Sam Azouzi
 *HEMAN*
 
 What do people need in their systems? Is there a hardware requirement?
-click==6.7 /n
-Flask==0.12.2 /n
-Flask-SQLAlchemy==2.3.2
-itsdangerous==0.24
-Jinja2==2.10
-MarkupSafe==1.0
-PyMySQL==0.8.0
-SQLAlchemy==1.2.4
-Werkzeug==0.14.1
+click==6.7
+, Flask==0.12.2 
+, Flask-SQLAlchemy==2.3.2
+, itsdangerous==0.24
+, Jinja2==2.10
+, MarkupSafe==1.0
+, PyMySQL==0.8.0
+, SQLAlchemy==1.2.4
+, Werkzeug==0.14.1
 ## Example Uses
 All solo Hackers looking for a partner or team will use this to help make it easier for them to find teammates with common or just cool ideas.
 
