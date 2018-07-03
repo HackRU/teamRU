@@ -8,8 +8,8 @@ The mind of Sam Azouzi
 *HEMAN*
 
 What do people need in their systems? Is there a hardware requirement?
-click==6.7
-Flask==0.12.2
+click==6.7 /n
+Flask==0.12.2 /n
 Flask-SQLAlchemy==2.3.2
 itsdangerous==0.24
 Jinja2==2.10
