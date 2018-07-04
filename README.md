@@ -21,6 +21,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+To set up the DB, just ask somebody (most likely). We intend to use AWS's RDS and the `attributes.txt` is the schema
+you must use to set it up.
+
+You'll have to configure config.example.py (make a copy without the `.example` and put in the DB details).
+
+Much of this is a bit experimental, so we know we're using AWS RDS with MYSQL, but not quite how.
+
 ## Example Uses
 
 All solo Hackers looking for a partner or team will use this to help make it easier for them to find teammates with common or just cool ideas.
