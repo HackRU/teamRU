@@ -27,7 +27,7 @@ All solo Hackers looking for a partner or team will use this to help make it eas
 
 ## Style Guide
 
-*What Code Design Style guide is this project following*
+:scream:
 
 
 ## TO-DO List
