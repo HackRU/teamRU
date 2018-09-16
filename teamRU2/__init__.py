@@ -2,4 +2,4 @@ from flask import Flask
 
 app=Flask(__name__)
 
-from teamRU import views
+from teamRU2 import views

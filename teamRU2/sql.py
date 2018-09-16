@@ -1,6 +1,6 @@
 import csv
 import pymysql
-from teamRU import config
+from teamru import config.example.py
 import datetime
 import sys
 def connect():

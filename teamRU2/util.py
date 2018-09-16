@@ -1,7 +1,7 @@
 #Used for defining helper functions
 import hashlib
-from teamRU import sql
-from teamRU import config
+from teamRU2 import sql
+from teamRU2 import config.example.py
 
 
 def authenticate(hcode):

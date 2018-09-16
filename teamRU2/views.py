@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, json, make_response,jsonify,redirect,url_for
 import random
-from teamRU import app
-from teamRU.util import *
+from teamRU2 import app
 import hashlib
-from teamRU.sql import *
+import util, sql
+
 #------------------------COOKIE LIST ------------------------------#
 #                       logoff = [1,0]
 #                       hash = [individual hashcode]
