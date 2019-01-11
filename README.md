@@ -38,13 +38,22 @@ All solo Hackers looking for a partner or team will use this to help make it eas
 
 
 ## TO-DO List
--Make sure everything thats already coded works, and to fix any bugs(Most coding is done but needs to be debugged and polished)
 
- - Threadhub
- - Dashboard
- - Chat
- - Login
- - Pretty much all HTML
+Bryan:
+-Figure out how to use LCS (use test endpoint/credentials)
+-Talk to Heman about that and sessionsssss
+-Read LCS documentation thoroughlyyyyyyy
+-------------------------
+Amulya:
+-design database for threads
+-filtering (start figuring this out)
+-start learning React
+-talk to Heman about sessions + how our database will scale alongside LCS
+-------------------------
+Rishab:
+-make main wireframe
+-Main features: Login page, preferences form, threads (w/ filter menu), Profile w/ favorites
+-Start React
 
 ## Links to Further docs
 

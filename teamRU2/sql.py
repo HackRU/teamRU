@@ -1,8 +1,9 @@
 import csv
 import pymysql
-from teamru import config.example.py
+from teamru import config.example
 import datetime
 import sys
+
 def connect():
     connect = pymysql.connect(host = config.host, user = config.username, password = config.password, db = "teamru", cursorclass = pymysql.cursors.DictCursor)
     return connect
@@ -20,6 +21,7 @@ def InsertQuery(query:str, x):
     con.commit()
     con.close()
     return ret
+    
 def SelectQuery(query:str, x = None, one:bool = True)->dict:
     con = connect()
     with con.cursor() as cursor:

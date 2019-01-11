@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, json, make_response,jsonify,r
 import random
 from teamRU2 import app
 import hashlib
-import util, sql
+#import sql
+import pymysql
 
 #------------------------COOKIE LIST ------------------------------#
 #                       logoff = [1,0]
