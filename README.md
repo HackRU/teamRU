@@ -43,13 +43,13 @@ Bryan:
 -Figure out how to use LCS (use test endpoint/credentials)
 -Talk to Heman about that and sessionsssss
 -Read LCS documentation thoroughlyyyyyyy
--------------------------
+
 Amulya:
 -design database for threads
 -filtering (start figuring this out)
 -start learning React
 -talk to Heman about sessions + how our database will scale alongside LCS
--------------------------
+
 Rishab:
 -make main wireframe
 -Main features: Login page, preferences form, threads (w/ filter menu), Profile w/ favorites
