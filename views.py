@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, json, make_response,jsonify,redirect,url_for
+from flask import Flask, render_template, request, json, make_response,jsonify,redirect,url_for, requests
+from config import *
 import random
-from teamRU2 import app
 import hashlib
 #import sql
 import pymysql
+from flask_pymongo import PyMongo
+from flask_cors import CORS
 
 #------------------------COOKIE LIST ------------------------------#
 #                       logoff = [1,0]
@@ -13,13 +15,21 @@ import pymysql
 #If any authentication issues happen -> logoff cookie should be set to false
 #If log off is false we can choose which routes are re-routed to home
 
+app=Flask(__name__)
 
+# configure db
 
+#CORS(app)
+
+# home page - set up in frontend
+"""
 @app.route('/', methods=['GET'])
 def main():
     return render_template('home.html')
+"""
 
-
+# login
+"""
 @app.route('/login',methods=['GET','POST'])
 def login():
     if request.method == 'GET':
@@ -41,6 +51,7 @@ def login():
         else:
             error="An HackRU account exists, but you still need to sign up for this website -> register link"
             return render_template('home.html',error=error)
+"""
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
@@ -75,6 +86,7 @@ def logoff():
     response.set_cookie('logoff','',expires=0)
     response.set_cookie('slack','',expires=0)
     return response
+
 
 @app.route('/register',methods=['GET','POST'])
 def register():
@@ -121,11 +133,11 @@ def register():
         response.set_cookie("hash",str(hashlib.sha256(str(password).encode('utf-8')).hexdigest()))
         response.set_cookie("slack",slackuser)
         return response
-        
+  """     
 
 
 
-@app.route('/threadHub', methods=['GET','POST'])
+@app.route('/threads', methods=['GET','POST'])
 def threadHub():
     if request.method == 'GET':
         select = "select threads.*, count(upvotes.*) as ct from threads, upvotes where upvotes.tid = threads.tid order by ct DESC"
@@ -201,4 +213,5 @@ def thread():
         if upvote:
             result = InsertQuery()
 
-
+if __name__ == "__main__":
+      app.run(port=5000, debug=True)
