@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, json, make_response,jsonify,redirect,url_for, requests
+from flask import Flask, render_template, request, json, make_response,jsonify,redirect,url_for#, requests
 from config import *
 import random
 import hashlib
+import requests
 #import sql
 import pymysql
 from flask_pymongo import PyMongo
@@ -52,6 +53,39 @@ def login():
             error="An HackRU account exists, but you still need to sign up for this website -> register link"
             return render_template('home.html',error=error)
 """
+
+@app.route('/login', methods=['POST'])
+def loginAndGetProfile():
+    if request.method == 'POST':
+        #if "email" not in event or "password" not in event:
+            #return {"statusCode":400,"body":"Missing Password or Email"}
+        if len(request.form['username']) == 0 or len(request.form['password']) == 0:
+            return {"statusCode":400,"body":"Missing Password or Email"}
+        else:
+            #yeet data for authorize end point
+            data_dict = {"email":request["username"], "password":request["password"]}
+            resp = requests.post(BASE_URL + "/authorize",json=(data_dict))
+            #grab the token and all read endpoint
+            resp_parsed = resp.json()
+            print(resp_parsed)
+            if resp_parsed["statusCode"] == 200:
+                resp_body = json.loads(resp_parsed["body"])
+                resp_json = resp_body["auth"]
+            
+                #make request to read endpoint
+                profile_request_data_dict = {"email":resp_json["email"],"token":resp_json["token"], "query":{"email":resp_json["email"]}}
+                profile = requests.post(BASE_URL + "/read",json=(profile_request_data_dict))
+                #for some reason the query returns a json array?
+                profile_json = profile.json()
+                profile_body = profile_json["body"][0]
+                ret = {"statusCode":200,"body":json.dumps({"email":resp_json["email"],"token":resp_json["token"]})}
+                print(ret['statusCode'])
+                return ret #add_cors_headers(ret)
+            else:
+                #on error send the error to the user
+                ret = {"statusCode":400,"body":json.dumps(resp_parsed["body"])}
+                print(ret['statusCode'])
+                return ret #add_cors_headers(ret)
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
@@ -133,8 +167,6 @@ def register():
         response.set_cookie("hash",str(hashlib.sha256(str(password).encode('utf-8')).hexdigest()))
         response.set_cookie("slack",slackuser)
         return response
-  """     
-
 
 
 @app.route('/threads', methods=['GET','POST'])
@@ -214,4 +246,4 @@ def thread():
             result = InsertQuery()
 
 if __name__ == "__main__":
-      app.run(port=5000, debug=True)
+      app.run(port=3002, debug=True)

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-//import { httpClient } from "./handlers/axiosConfig";
+import { httpClient } from "./handlers/axiosConfig.js";
 import Cookies from "universal-cookie";
-import axios from "axios";
+//import axios from "axios";
 
 export default class Login extends Component {
   constructor() {
@@ -24,8 +24,7 @@ export default class Login extends Component {
       email: this.state.login,
       password: this.state.password
     };
-    /*httpClient*/
-    axios
+    httpClient
       .post("/login", request_data)
       .then(response => {
         if (response.data.statusCode === 200) {
@@ -56,22 +55,36 @@ export default class Login extends Component {
             Username:
             <input
               type="text"
-              id="login"
+              id="username"
+              name="username"
               value={this.state.login}
               onChange={this.handleChange}
             />
           </label>
+          <br />
           <label>
             Password:
             <input
               type="password"
               id="password"
+              name="password"
               value={this.state.password}
               onChange={this.handleChange}
             />
           </label>
+          <br />
           <input type="submit" value="Submit" />
         </form>
+        <h4>
+          New user?
+          <a
+            href="https://hackru.org/signup"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Create an account.
+          </a>
+        </h4>
       </div>
     );
   }
