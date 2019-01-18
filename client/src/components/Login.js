@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { httpClient } from "./handlers/axiosConfig.js";
+import { httpClient } from "../handlers/axiosConfig.js";
 import Cookies from "universal-cookie";
 //import axios from "axios";
 
