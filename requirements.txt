@@ -6,4 +6,4 @@ Jinja2==2.10
 MarkupSafe==1.0
 PyMySQL==0.8.0
 SQLAlchemy==1.2.4
-Werkzeug==0.14.1
+Werkzeug==0.15.3
