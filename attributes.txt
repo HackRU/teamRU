@@ -1,34 +1,19 @@
-Threads:
+Users
+1) email
+2) hasateam
+3) slackid
+4) skills
+5) tracks
+6) partnerskills
+7) hasateam
+8) hasprofile
 
-1) Thread ID
-2) User ID
-3) Title
-4) Description
-5) Keywords (stored as comma-separated string)
-6) Created
 
-User:
+Teams
+1) name
+3) members: array of emails
 
-1) User ID (rendered from LCS)
-2) Slack account
-3) Threads joined
-4) Hash code
 
-Joined:
 
-1) Thread ID
-2) User ID
-3) Joiner IDs (allows 3 more)
-
-Comments:
-
-1) Thread ID
-2) Person who made comment
-3) Actual comment
-
-Upvote:
-
-1) Thread ID
-2) User ID
 
 
