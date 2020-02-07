@@ -1,17 +1,20 @@
 Users
 1) email
 2) hasateam
-3) slackid
 4) skills
-5) tracks
-6) partnerskills
+5) prizes
 7) hasateam
 8) hasprofile
 
 
 Teams
 1) name
-3) members: array of emails
+2) members: array of emails
+3) complete
+4) prizes
+5) partnerskills
+6) desc
+
 
 
 
