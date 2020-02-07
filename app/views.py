@@ -10,7 +10,6 @@ def call_validate_endpoint(email, token):
     data_dic = {"email": email, "token": token}
     resp = requests.post(base_url + "/validate", json=data_dic)
     resp_parsed = resp.json()
-    print resp_parsed
     if resp_parsed["statusCode"] == 400:
         '''{"statusCode":400,"body":"User email not found."}'''
         return resp_parsed
