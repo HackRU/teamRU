@@ -1,20 +1,16 @@
 Users
 1) email
-2) hasateam
-4) skills
-5) prizes
-7) hasateam
-8) hasprofile
-
+2) prizes
+3) skills
+4) hasateam
 
 Teams
 1) name
 2) members: array of emails
-3) complete
-4) prizes
+3) prizes
+4) Description
 5) partnerskills
-6) desc
-
+6) complete
 
 
 
