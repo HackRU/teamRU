@@ -300,7 +300,7 @@ def team_profile(email="", token=""):
 
 
 @app.route('/team-recommendations', methods=['GET'])
-def team_recommendations(email="h", token=""):
+def team_recommendations(email="", token=""):
     # if call_validate_endpoint(email, token) == 200:
         if request.method == 'GET':
             user = users.find_one({"_id": email})
@@ -338,87 +338,108 @@ def team_recommendations(email="h", token=""):
     #     return resp
 
 
-
-
-"""endpoints below not done yet"""
-
-#
-# @app.route('/interested', methods=['POST'])
-# def interested(email, token):
-#     # if call_validate_endpoint(email, token) == 200:
-#
-#     # else:
-#     #     resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-#     #     resp.status_code = 404
-#     #     return resp
-
-#
-# @app.route('/confirm-member', methods=['POST'])
-# def confirm_member(email, token):
-#     pass
-#
-#
-#
-# @app.route('/individual-recommendations', methods=['GET'])
-# def individual_recommendations(email="hi", token=""):
-#     # if call_validate_endpoint(email, token) == 200:
-#         if request.method == 'GET':
-#             prizes = users.aggregate([
-#                 {"$match": {"_id": email}}, {"$project": {"prizes": 1}}
-#             ])
-#             partner_skills = users.aggregate([
-#                 {"$match": {"_id": email}}, {"$project": {"partner_skills": 1}}
-#             ])
-#             matches_emails = set()
-#             matches = []
-#             for track in prizes:
-#                 match = users.aggregate([
-#                     {"hasateam": False, "prizes": {"$all": [track]}}, {"$project": {"email": 1, "skills": 1, "prizes": 1}}
-#                 ])
-#                 if not match:
-#                     continue
-#                 else:
-#                     match_email = match['email']
-#                     if match_email not in matches_emails:
-#                         matches_emails.add(match_email)
-#                         matches.append(match)
-#             for skill in partner_skills:
-#                 match = users.aggregate([
-#                     {"hasateam": False, "skills": {"$all": [skill]}}, {"$project": {"email": 1, "skills": 1, "prizes": 1}}
-#                 ])
-#                 if not match:
-#                     continue
-#                 else:
-#                     match_email = match['email']
-#                     if match_email not in matches_emails:
-#                         matches_emails.add(match_email)
-#                         matches.append(match)
-#             if not matches:
-#                 resp = jsonify({"statusCode": 400, "body": "No recommendations found"})
-#                 resp.status_code = 400
-#                 return resp
-#             else:
-#                 resp = jsonify({"statusCode": 200, "body": matches})
-#                 resp.status_code = 200
-#                 return resp
+@app.route('/individual-recommendations', methods=['GET'])
+def individual_recommendations(email="", token=""):
+    # if call_validate_endpoint(email, token) == 200:
+        if request.method == 'GET':
+            team = teams.find_one({"members": {"$all": [email.strip().lower()]}})
+            if not team:
+                resp = jsonify({"statusCode": 400, "body": "User not in a team"})
+                resp.status_code = 400
+                return resp
+            if 'partnerskills' not in team:
+                resp = jsonify({"statusCode": 401, "body": "Profile not complete"})
+                resp.status_code = 401
+                return resp
+            skills = team['partnerskills']
+            emails = set()
+            matches = []
+            for skill in skills:
+                match = users.aggregate([
+                    {"$match": {"hasateam": False, "skills": {"$all": [skill]}}}
+                ])
+                if not match:
+                    continue
+                for m in match:
+                    if m['_id'] not in emails:
+                        emails.add(m['_id'])
+                        matches.append(m)
+            if not matches:
+                resp = jsonify({"statusCode": 402, "body": "No recommendations found"})
+                resp.status_code = 402
+            else:
+                resp = jsonify({"statusCode": 200, "body": matches})
+                resp.status_code = 200
+            return resp
     # else:
     #     resp = jsonify({"statusCode": 404, "body": "Invalid request"})
     #     resp.status_code = 404
     #     return resp
-#
-#
-# @app.route('/contact-person', methods=['POST'])
-# def contact_team(email, token):
-#     # Goal is to use the dm endpoint from lcs
-#     '''Not yet implemented'''
-#     if call_validate_endpoint(email, token) == 200:
-#         if request.method == 'POST':
-#             user_email = request.form['email']
-#             if not user_email:
-#                 return render_template('', result='Please try again')
-#             slack_id = users.aggregate([{"match": {"_id": user_email}}, {"$project": {"slack_id": 1}}])
-#             if not slack_id:
-#                 return render_template('', result='Please try again')
-#             return render_template('', slack_id=slack_id)
-#     else:
-#         return render_template('', result='Please try again')
+
+
+@app.route('/interested', methods=['POST'])
+def interested(email="", token=""):
+    # if call_validate_endpoint(email, token) == 200:
+        if request.method == 'POST':
+            data = request.get_json(silent=True)
+            if not data or 'name' not in data:
+                resp = jsonify({"statusCode": 401, "body": "Missing inf"})
+                resp.status_code = 401
+                return resp
+            team_name = data['name']
+            team = teams.find_one({"_id": team_name})
+            if not team:
+                resp = jsonify({"statusCode": 402, "body": "Invalid team"})
+                resp.status_code = 402
+                return resp
+            teams.update_one({"_id": team_name}, {"$push": {"interested": email.strip().lower()}})
+    # else:
+    #     resp = jsonify({"statusCode": 404, "body": "Invalid request"})
+    #     resp.status_code = 404
+    #     return resp
+
+
+@app.route('/interested-hackers', methods=['GET'])
+def interested_hackers(email="", token=""):
+    # if call_validate_endpoint(email, token) == 200:
+        if request.method == 'GET':
+            team = teams.find_one({"members": {"$all": [email]}}, {"_id": 0, "interested": 1})
+            if 'interested' not in team:
+                resp = jsonify({"statusCode": 400, "body": "None"})
+                resp.status_code = 400
+                return resp
+            interested = team['interested']
+            profiles = set()
+            for hacker in interested:
+                profiles.add(users.find_one({"_id": hacker}))
+            if not profiles:
+                resp = jsonify({"statusCode": 400, "body": "None"})
+                resp.status_code = 400
+            else:
+                resp = jsonify({"statusCode": 200, "body": profiles})
+                resp.status_code = 200
+            return resp
+    # else:
+    #     resp = jsonify({"statusCode": 404, "body": "Invalid request"})
+    #     resp.status_code = 404
+    #     return resp
+
+
+@app.route('/confirm-member', methods=['POST'])
+def confirm_member(email, token):
+    # if call_validate_endpoint(email, token) == 200:
+        if request.method == 'POST':
+            data = request.get_json(silent=True)
+            if not data or 'name' not in data:
+                resp = jsonify({"statusCode": 401, "body": "Missing inf"})
+                resp.status_code = 401
+                return resp
+            hacker = data['email'].strip().lower()
+            team_name = teams.find_one({"members": {"$all": [email]}}, {"_id"})['_id']
+            users.update_one({"_id": hacker}, {"$set": {"hasateam": True}})
+            teams.update_one({"_id": team_name}, {"$push": {"members": hacker}})
+
+    # else:
+    #     resp = jsonify({"statusCode": 404, "body": "Invalid request"})
+    #     resp.status_code = 404
+    #     return resp
