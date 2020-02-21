@@ -100,6 +100,7 @@ def start_a_team(email="", token=""):
     #     resp.status_code = 404
     #     return resp
 
+
 @app.route('/leave-team', methods=['POST'])
 def leave_team(email="", token=""):
     # if call_validate_endpoint(email, token) == 200:
@@ -173,6 +174,7 @@ def add_team_member(email="", token=""):
     #     resp = jsonify({"statusCode": 404, "body": "Invalid request"})
     #     resp.status_code = 404
     #     return resp
+
 
 @app.route('/team-complete', methods=['POST'])
 def team_complete(email="jlf", token=""):
@@ -278,13 +280,18 @@ def all_teams(email="", token=""):
     #     return resp
 
 
-@app.route('/team-members', methods=['GET'])
-def team_members(email="", token=""):
+@app.route('/team-profile', methods=['GET'])
+def team_profile(email="", token=""):
     # if call_validate_endpoint(email, token) == 200:
         if request.method == 'GET':
-            members = teams.find_one({"members": {"$all": [email]}}, {"members"})['members']
-            resp = jsonify({"statusCode": 200, "body": members})
-            resp.status_code = 200
+            team = teams.find_one({"members": {"$all": [email]}})
+            if not team:
+                resp = jsonify({"statusCode": 400, "body": "Team Not found"})
+                resp.status_code = 400
+            # team = teams.find_one({"members": {"$all": [email]}}, {"members"})
+            else:
+                resp = jsonify({"statusCode": 200, "body": team})
+                resp.status_code = 200
             return resp
     # else:
     #     resp = jsonify({"statusCode": 404, "body": "Invalid request"})
@@ -292,6 +299,43 @@ def team_members(email="", token=""):
     #     return resp
 
 
+@app.route('/team-recommendations', methods=['GET'])
+def team_recommendations(email="h", token=""):
+    # if call_validate_endpoint(email, token) == 200:
+        if request.method == 'GET':
+            user = users.find_one({"_id": email})
+            if not user:
+                resp = jsonify({"statusCode": 403, "body": "Invalid user"})
+                resp.status_code = 403
+                return resp
+            if 'skills' not in user:
+                resp = jsonify({"statusCode": 400, "body": "No recommendations found"})
+                resp.status_code = 400
+                return resp
+            skills = user['skills']
+            names = set()
+            matches = []
+            for skill in skills:
+                match = teams.aggregate([
+                    {"$match": {"complete": False, "partnerskills": {"$all": [skill]}}}
+                ])
+                if not match:
+                    continue
+                for m in match:
+                    if m['_id'] not in names:
+                        names.add(m['_id'])
+                        matches.append(m)
+            if not matches:
+                resp = jsonify({"statusCode": 400, "body": "No recommendations found"})
+                resp.status_code = 400
+            else:
+                resp = jsonify({"statusCode": 200, "body": matches})
+                resp.status_code = 200
+            return resp
+    # else:
+    #     resp = jsonify({"statusCode": 404, "body": "Invalid request"})
+    #     resp.status_code = 404
+    #     return resp
 
 
 
@@ -311,11 +355,6 @@ def team_members(email="", token=""):
 #
 # @app.route('/confirm-member', methods=['POST'])
 # def confirm_member(email, token):
-#     pass
-#
-#
-# @app.route('/team-recommendations', methods=['GET'])
-# def team_recommendations(email, token):
 #     pass
 #
 #
