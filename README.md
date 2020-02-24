@@ -4,6 +4,9 @@
 
 The purpose of this project is to help hackers find teammates who are interested in the same kinda project as they are. 
 
+### API docs:
+Read more on how to use the API [here](https://github.com/HackRU/teamRU/wiki/TeamRU-API).
+
 ### How to run the project:
 1) clone the repo
 2) cd to teamRU
