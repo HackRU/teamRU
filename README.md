@@ -17,5 +17,6 @@ Read more on how to use the API [here](https://github.com/HackRU/teamRU/wiki/Tea
 ### Next Steps:
 1) Routing
 2) Unit tests
+3) DOCUMENTATION IS NOT FINISHED YET
 
 
