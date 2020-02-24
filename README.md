@@ -12,9 +12,7 @@ The purpose of this project is to help hackers find teammates who are interested
 5) run "flask run"
 
 ### Next Steps:
-1) Documentation
-2) Routing
-3) Unit tests
-4) Bugs
-4) Frontend
+1) Routing
+2) Unit tests
+
 
