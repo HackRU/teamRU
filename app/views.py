@@ -76,6 +76,12 @@ def format_string(s):
     return elements
 
 
+def return_resp(code, body):
+    resp = jsonify({"statusCode": code, "body": body})
+    resp.status_code = code
+    return resp
+
+
 @app.route('/profile', methods=['GET', 'POST'])
 def profile(email, token):
     email = email.lower().strip()
@@ -83,9 +89,7 @@ def profile(email, token):
         if request.method == 'GET':
             has_profile = users.find_one({"_id": email})
             if not has_profile:
-                resp = jsonify({"statusCode": 401, "body": "User Not found"})
-                resp.status_code = 200
-                return resp
+                return return_resp(200, "User Not found")
             user_profile = users.find_one({"_id": email})
             dir_token = call_auth_endpoint()
             if dir_token != 400:
@@ -93,15 +97,11 @@ def profile(email, token):
             else:
                 name = ""
             user_profile.update({"name": name})
-            resp = jsonify({"statusCode": 200, "body": user_profile})
-            resp.status_code = 200
-            return resp
+            return return_resp(200, user_profile)
         elif request.method == 'POST':
             data = request.get_json(silent=True)
             if not data or 'skills' not in data or not data['skills']:
-                resp = jsonify({"statusCode": 400, "body": "Required info not found"})
-                resp.status_code = 400
-                return resp
+                return return_resp(400, "Required info not found")
             if 'prizes' not in data:
                 prizes = []
             else:
@@ -110,17 +110,12 @@ def profile(email, token):
             user_exists = users.find_one({"_id": email})
             if user_exists:
                 users.update({"_id": email}, {"$set": {"skills": skills, "prizes": prizes}})
-                resp = jsonify({"statusCode": 200, "body": "Successful update"})
-                resp.status_code = 200
+                return return_resp(200, "Successful update")
             else:
                 users.insert_one({"_id": email, "skills": skills, "prizes": prizes, "hasateam": False, "potentialteams": []})
-                resp = jsonify({"statusCode": 201, "body": "Profile created"})
-                resp.status_code = 201
-            return resp
+                return return_resp(201, "Profile created")
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/start-a-team', methods=['POST'])
@@ -162,9 +157,7 @@ def start_a_team(email, token):
                     resp.status_code = 200
                     return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/leave-team', methods=['POST'])
@@ -189,9 +182,7 @@ def leave_team(email, token):
             resp.status_code = 200
             return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/add-team-member', methods=['POST'])
@@ -248,9 +239,7 @@ def add_team_member(email, token):
                     resp.status_code = 406
                     return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/team-complete', methods=['POST'])
@@ -269,9 +258,7 @@ def team_complete(email, token):
             resp.status_code = 200
             return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/open-teams', methods=['GET'])
@@ -311,9 +298,7 @@ def open_teams(email, token):
                 resp.status_code = 200
                 return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/team-profile', methods=['GET'])
@@ -341,9 +326,7 @@ def team_profile(email, token):
                 resp.status_code = 200
             return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/team-recommendations', methods=['GET'])
@@ -401,9 +384,7 @@ def team_recommendations(email, token):
                 resp.status_code = 200
             return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/individual-recommendations', methods=['GET'])
@@ -467,9 +448,7 @@ def individual_recommendations(email, token):
                 resp.status_code = 200
             return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/interested', methods=['POST'])
@@ -504,9 +483,7 @@ def interested(email, token):
             resp.status_code = 200
             return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
 
 @app.route('/confirm-member', methods=['POST'])
@@ -536,7 +513,5 @@ def confirm_member(email, token):
             resp.status_code = 200
             return resp
     else:
-        resp = jsonify({"statusCode": 404, "body": "Invalid request"})
-        resp.status_code = 404
-        return resp
+        return return_resp(404, "Invalid request")
 
