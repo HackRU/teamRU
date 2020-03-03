@@ -137,25 +137,17 @@ def start_a_team(email, token):
             team_exist = teams.find_one({"_id": str(team_name)})
             user_exists = users.find_one({"_id": email})
             if not user_exists:
-                resp = jsonify({"statusCode": 403, "body": "Invalid user"})
-                resp.status_code = 403
-                return resp
+                return return_resp(403, "Invalid user")
             if team_exist:
-                resp = jsonify({"statusCode": 401, "body": "Invalid name"})
-                resp.status_code = 401
-                return resp
+                return return_resp(401, "Invalid name")
             else:
                 user_in_a_team = users.find_one({"_id": email, "hasateam": True})
                 if user_in_a_team:
-                    resp = jsonify({"statusCode": 402, "body": "User in a team"})
-                    resp.status_code = 402
-                    return resp
+                    return return_resp(402, "User in a team")
                 else:
                     users.update_one({"_id": email}, {"$set": {"hasateam": True}})
                     teams.insert({"_id": team_name, "members": [email], "desc": team_desc, "partnerskills": formatted_skills, "prizes": formatted_prizes, "complete": False, "interested": []})
-                    resp = jsonify({"statusCode": 200, "body": "Success"})
-                    resp.status_code = 200
-                    return resp
+                    return return_resp(200, "Success")
     else:
         return return_resp(404, "Invalid request")
 
@@ -167,9 +159,7 @@ def leave_team(email, token):
         if request.method == 'POST':
             user_in_a_team = users.find_one({"_id": email, "hasateam": True})
             if not user_in_a_team:
-                resp = jsonify({"statusCode": 400, "body": "User doesn't have a team"})
-                resp.status_code = 400
-                return resp
+                return return_resp(400, "User doesn't have a tram")
             team_name = teams.find_one({"members": {"$all": [email]}}, {"_id"})['_id']
             team_size = len(teams.find_one({"_id": team_name})['members'])
             if team_size == 1:
@@ -178,9 +168,7 @@ def leave_team(email, token):
                 teams.update_one({"_id": team_name}, {"$pull": {"members": email}})
                 teams.update_one({"_id": team_name}, {"$set": {"complete": False}})
             users.update_one({"_id": email}, {"$set": {"hasateam": False}})
-            resp = jsonify({"statusCode": 200, "body": "Success"})
-            resp.status_code = 200
-            return resp
+            return return_resp(200, "Success")
     else:
         return return_resp(404, "Invalid request")
 
@@ -192,38 +180,26 @@ def add_team_member(email, token):
         if request.method == 'POST':
             data = request.get_json(silent=True)
             if not data or 'email' not in data or not data['email']:
-                resp = jsonify({"statusCode": 400, "body": "Required info not found"})
-                resp.status_code = 400
-                return resp
+                return return_resp(400, "Required info not found")
             partner_email = data['email'].strip().lower()
             dir_token = call_auth_endpoint()
             if dir_token == 400:
-                resp = jsonify({"statusCode": 401, "body": "auth endpoint failed"})
-                resp.status_code = 401
-                return resp
+                return return_resp(401, "auth endpoint failed")
             if get_name(dir_token, partner_email) == 400:
-                resp = jsonify({"statusCode": 402, "body": "Partner doesn't have a hackru account"})
-                resp.status_code = 402
-                return resp
+                return return_resp(402, "Partner doesn't have a hackru account")
             team = teams.find_one({"members": {"$all": [email]}})
             if not team:
-                resp = jsonify({"statusCode": 405, "body": "User not in a team"})
-                resp.status_code = 405
-                return resp
+                return return_resp(405, "User not in a team")
             team_name = team['_id']
             team_size = len(team['members'])
             team_full = teams.find_one({"_id": team_name, "complete": True})
             if team_full or team_size >= 4:
-                resp = jsonify({"statusCode": 403, "body": "Team complete"})
-                resp.status_code = 403
-                return resp
+                return return_resp(403, "Team complete")
             user_exist = users.find_one({"_id": partner_email})
             if not user_exist:
                 users.insert({"_id": partner_email, "hasateam": True, "skills": [], "prizes": []})
                 teams.update_one({"_id": team_name}, {"$push": {"members": partner_email}})
-                resp = jsonify({"statusCode": 200, "body": "Success"})
-                resp.status_code = 200
-                return resp
+                return return_resp(200, "Success")
             else:
                 partner_in_a_team = users.find_one({"_id": partner_email, "hasateam": True})
                 if not partner_in_a_team:
@@ -231,13 +207,9 @@ def add_team_member(email, token):
                     teams.update_one({"_id": team_name}, {"$push": {"members": partner_email}})
                     if team_size == 4:
                         teams.update_one({"_id": team_name}, {"$set": {"complete": True}})
-                    resp = jsonify({"statusCode": 200, "body": "Success"})
-                    resp.status_code = 200
-                    return resp
+                    return return_resp(200, "Success")
                 else:
-                    resp = jsonify({"statusCode": 406, "body": "Partner in a team"})
-                    resp.status_code = 406
-                    return resp
+                    return return_resp(406, "Partner in a team")
     else:
         return return_resp(404, "Invalid request")
 
@@ -249,14 +221,10 @@ def team_complete(email, token):
         if request.method == 'POST':
             team = teams.find_one({"members": {"$all": [email]}}, {"_id"})
             if not team:
-                resp = jsonify({"statusCode": 401, "body": "User not in a team"})
-                resp.status_code = 401
-                return resp
+                return return_resp(401, "User not in a team")
             team_name = team['_id']
             teams.update_one({"_id": team_name}, {"$set": {"complete": True}})
-            resp = jsonify({"statusCode": 200, "body": "Success"})
-            resp.status_code = 200
-            return resp
+            return return_resp(200, "Success")
     else:
         return return_resp(404, "Invalid request")
 
@@ -273,12 +241,8 @@ def open_teams(email, token):
                 for x in available_teams:
                     all_open_teams.append(x)
                 if not all_open_teams:
-                    resp = jsonify({"statusCode": 400, "body": "No open teams"})
-                    resp.status_code = 400
-                    return resp
-                resp = jsonify({"statusCode": 200, "body": all_open_teams})
-                resp.status_code = 200
-                return resp
+                    return return_resp(400, "No open teams")
+                return return_resp(200, all_open_teams)
             else:
                 search = data['filter'].lower().strip()
                 available_teams = teams.find({"complete": False, "$or": [
@@ -291,12 +255,8 @@ def open_teams(email, token):
                 for x in available_teams:
                     all_open_teams.append(x)
                 if not all_open_teams:
-                    resp = jsonify({"statusCode": 400, "body": "No open teams"})
-                    resp.status_code = 400
-                    return resp
-                resp = jsonify({"statusCode": 200, "body": all_open_teams})
-                resp.status_code = 200
-                return resp
+                    return return_resp(400, "No open teams")
+                return return_resp(200, all_open_teams)
     else:
         return return_resp(404, "Invalid request")
 
@@ -308,8 +268,7 @@ def team_profile(email, token):
         if request.method == 'GET':
             team = teams.find_one({"members": {"$all": [email]}})
             if not team:
-                resp = jsonify({"statusCode": 400, "body": "Team Not found"})
-                resp.status_code = 400
+                return return_resp(400, "Team Not found")
             else:
                 members = team['members']
                 members_names = []
@@ -322,9 +281,7 @@ def team_profile(email, token):
                         continue
                     members_names.append(name)
                     team.update({"names": members_names})
-                resp = jsonify({"statusCode": 200, "body": team})
-                resp.status_code = 200
-            return resp
+                return return_resp(200, team)
     else:
         return return_resp(404, "Invalid request")
 
@@ -336,18 +293,12 @@ def team_recommendations(email, token):
         if request.method == 'GET':
             user = users.find_one({"_id": email})
             if not user:
-                resp = jsonify({"statusCode": 403, "body": "Invalid user"})
-                resp.status_code = 403
-                return resp
+                return return_resp(403, "Invalid user")
             user_in_a_team = users.find_one({"_id": email, "hasateam": True})
             if user_in_a_team:
-                resp = jsonify({"statusCode": 401, "body": "User in a team"})
-                resp.status_code = 401
-                return resp
+                return return_resp(402, "User in a team")
             if 'skills' not in user or not user['skills']:
-                resp = jsonify({"statusCode": 400, "body": "No recommendations found"})
-                resp.status_code = 400
-                return resp
+                return return_resp(400, "No recommendations found")
             if 'prizes' not in user or not user['prizes']:
                 prizes = []
             else:
@@ -377,12 +328,9 @@ def team_recommendations(email, token):
                         names.add(m['_id'])
                         matches.append(m)
             if not matches:
-                resp = jsonify({"statusCode": 400, "body": "No recommendations found"})
-                resp.status_code = 400
+                return return_resp(400, "No recommendations found")
             else:
-                resp = jsonify({"statusCode": 200, "body": matches})
-                resp.status_code = 200
-            return resp
+                return return_resp(200, matches)
     else:
         return return_resp(404, "Invalid request")
 
@@ -394,13 +342,9 @@ def individual_recommendations(email, token):
         if request.method == 'GET':
             team = teams.find_one({"members": {"$all": [email]}})
             if not team:
-                resp = jsonify({"statusCode": 400, "body": "User not in a team"})
-                resp.status_code = 400
-                return resp
+                return return_resp(400, "User not in a team")
             if 'partnerskills' not in team or not team['partnerskills']:
-                resp = jsonify({"statusCode": 401, "body": "Profile not complete"})
-                resp.status_code = 401
-                return resp
+                return return_resp(401, "Profile not complete")
             if 'prizes' not in team or not team['prizes']:
                 prizes = []
             else:
@@ -441,12 +385,9 @@ def individual_recommendations(email, token):
                         m.update({"name": name})
                         matches.append(m)
             if not matches:
-                resp = jsonify({"statusCode": 402, "body": "No recommendations found"})
-                resp.status_code = 402
+                return return_resp(402, "No recommendations found")
             else:
-                resp = jsonify({"statusCode": 200, "body": matches})
-                resp.status_code = 200
-            return resp
+                return return_resp(200, matches)
     else:
         return return_resp(404, "Invalid request")
 
@@ -458,30 +399,20 @@ def interested(email, token):
         if request.method == 'POST':
             data = request.get_json(silent=True)
             if not data or 'name' not in data or not data['name']:
-                resp = jsonify({"statusCode": 401, "body": "Missing inf"})
-                resp.status_code = 401
-                return resp
+                return return_resp(401, "Missing inf")
             user_in_a_team = users.find_one({"_id": email, "hasateam": True})
             if user_in_a_team:
-                resp = jsonify({"statusCode": 403, "body": "User in a team"})
-                resp.status_code = 403
-                return resp
+                return return_resp(403, "User in a team")
             team_name = data['name']
             team = teams.find_one({"_id": team_name})
             if not team:
-                resp = jsonify({"statusCode": 402, "body": "Invalid name"})
-                resp.status_code = 402
-                return resp
+                return return_resp(402, "Invalid name")
             complete = teams.find_one({"_id": team_name, "complete": True})
             if complete or len(team['members']) >= 4:
-                resp = jsonify({"statusCode": 405, "body": "Team complete"})
-                resp.status_code = 405
-                return resp
+                return return_resp(405, "Team complete")
             teams.update_one({"_id": team_name}, {"$push": {"interested": email}})
             users.update_one({"_id": email}, {"$push": {"potentialteams": team_name}})
-            resp = jsonify({"statusCode": 200, "body": "Success"})
-            resp.status_code = 200
-            return resp
+            return return_resp(200, "Success")
     else:
         return return_resp(404, "Invalid request")
 
@@ -493,25 +424,19 @@ def confirm_member(email, token):
         if request.method == 'POST':
             data = request.get_json(silent=True)
             if not data or 'email' not in data or not data['email']:
-                resp = jsonify({"statusCode": 401, "body": "Missing inf"})
-                resp.status_code = 401
-                return resp
+                return return_resp(401, "Missing inf")
             hacker = data['email'].strip().lower()
             team_name = teams.find_one({"members": {"$all": [email]}}, {"_id"})['_id']
             team = teams.find_one({"_id": team_name})
             team_members = team['members']
             complete = teams.find_one({"_id": team_name, "complete": True})
             if len(team_members) >= 4 or complete:
-                resp = jsonify({"statusCode": 402, "body": "Team Complete"})
-                resp.status_code = 402
-                return resp
+                return return_resp(402, "Team Complete")
             users.update_one({"_id": hacker}, {"$set": {"hasateam": True}})
             users.update_one({"_id": hacker}, {"$pull": {"potentialteams": team_name}})
             teams.update_one({"_id": team_name}, {"$push": {"members": hacker}})
             teams.update_one({"_id": team_name}, {"$pull": {"interested": hacker}})
-            resp = jsonify({"statusCode": 200, "body": "Success"})
-            resp.status_code = 200
-            return resp
+            return return_resp(200, "Success")
     else:
         return return_resp(404, "Invalid request")
 
