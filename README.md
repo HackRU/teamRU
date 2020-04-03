@@ -17,5 +17,10 @@ Read more on how to use the API [here](https://github.com/HackRU/teamRU/wiki/Tea
 
 ### Next Steps:
 1) Routing
-2) Unit tests
-
+2) Unit tests - not sure if i should have a separate db for this
+3) Integrate lcs slack endpoint
+4) Deploy
+5) Improve the recommendations algorithm
+6) Signin authentication flow - discuss with Shivan, Mickey and frontend team
+    *I have my own login system for now to test but it shouldn't be used when we deploy
+7) Set up a virtual env
