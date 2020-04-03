@@ -1,121 +1,14 @@
-from flask import request, jsonify
-import requests
+from flask import request
 from app import app
 from app.db import users, teams
+from app.profile import update_profile
 
-
-base_url = "https://api.hackru.org/dev"
-
-
-def call_validate_endpoint(email, token):
-    data_dic = {"email": email, "token": token}
-    resp = requests.post(base_url + "/validate", json=data_dic)
-    resp_parsed = resp.json()
-    if resp_parsed["statusCode"] == 400:
-        '''{"statusCode":400,"body":"User email not found."}'''
-        return resp_parsed
-    if resp_parsed["statusCode"] == 403:
-        '''{"statusCode": 403, "body": "Permission denied"}'''
-        return resp_parsed
-    if resp_parsed["statusCode"] == 200:
-        return 200
-
-
-def login(email, password):
-    data_dic = {"email": email, "password": password}
-    resp = requests.post(base_url + "/authorize", json=data_dic)
-    if not resp:
-        return 400
-    resp_parsed = resp.json()
-    if resp_parsed['statusCode'] == 200:
-        return resp_parsed['body']["auth"]["token"]
-    else:
-        return 400
-
-
-def call_auth_endpoint():
-    email = "teambuilder@hackru.org"
-    password = ""
-    data_dic = {"email": email, "password": password}
-    resp = requests.post(base_url + "/authorize", json=data_dic)
-    if not resp:
-        return 400
-    resp_parsed = resp.json()
-    if resp_parsed['statusCode'] == 200:
-        return resp_parsed['body']["auth"]["token"]
-    else:
-        return 400
-
-
-def get_name(token, email):
-    dir_email = "teambuilder@hackru.org"
-    data_dic = {"email": dir_email, "token": token, "query": {"email": email}}
-    resp = requests.post(base_url + "/read", json=data_dic)
-    if not resp:
-        return 400
-    resp_parsed = resp.json()
-    if resp_parsed['statusCode'] == 200:
-        if not resp_parsed["body"]:
-            return 400
-        name = ""
-        if 'first_name' in resp_parsed["body"][0]:
-            name = name + resp_parsed["body"][0]['first_name']
-        if 'last_name' in resp_parsed["body"][0]:
-            name = name + " " + resp_parsed["body"][0]['last_name']
-        return name
-    else:
-        return 400
-
-
-def format_string(s):
-    if not s:
-        return []
-    elements = s.split(",")
-    for i in range(0, len(elements)):
-        elements[i] = elements[i].strip().lower()
-    return elements
-
-
-def return_resp(code, body):
-    resp = jsonify({"statusCode": code, "body": body})
-    resp.status_code = code
-    return resp
+from app.util import call_validate_endpoint, login, call_auth_endpoint, get_name, format_string, return_resp
 
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile(email, token):
-    email = email.lower().strip()
-    if call_validate_endpoint(email, token) == 200:
-        if request.method == 'GET':
-            has_profile = users.find_one({"_id": email})
-            if not has_profile:
-                return return_resp(200, "User Not found")
-            user_profile = users.find_one({"_id": email})
-            dir_token = call_auth_endpoint()
-            if dir_token != 400:
-                name = get_name(dir_token, email)
-            else:
-                name = ""
-            user_profile.update({"name": name})
-            return return_resp(200, user_profile)
-        elif request.method == 'POST':
-            data = request.get_json(silent=True)
-            if not data or 'skills' not in data or not data['skills']:
-                return return_resp(400, "Required info not found")
-            if 'prizes' not in data:
-                prizes = []
-            else:
-                prizes = format_string(data['prizes'].strip().lower())
-            skills = format_string(data['skills'].strip().lower())
-            user_exists = users.find_one({"_id": email})
-            if user_exists:
-                users.update({"_id": email}, {"$set": {"skills": skills, "prizes": prizes}})
-                return return_resp(200, "Successful update")
-            else:
-                users.insert_one({"_id": email, "skills": skills, "prizes": prizes, "hasateam": False, "potentialteams": []})
-                return return_resp(201, "Profile created")
-    else:
-        return return_resp(404, "Invalid request")
+    update_profile(email, token)
 
 
 @app.route('/start-a-team', methods=['POST'])
