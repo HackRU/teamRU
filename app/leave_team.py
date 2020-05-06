@@ -1,4 +1,4 @@
-from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name
+from app.util import call_validate_endpoint, return_resp
 from flask import request
 from app.db import users, teams
 
