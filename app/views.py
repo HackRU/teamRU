@@ -10,11 +10,7 @@ from app.team_complete import mark_team_complete
 from app.open_teams import get_open_teams
 from app.team_profile import get_team_profile
 from app.interested import user_interested
-from app.util import login
 
-emaill = "test1@gmail.com"
-passwordd = "test1"
-tokenn = login(emaill, passwordd)
 
 @app.route('/user-profile', methods=['GET', 'POST'])
 def user_profile(email, token):
@@ -42,7 +38,7 @@ def team_complete(email, token):
 
 
 @app.route('/open-teams', methods=['GET'])
-def open_teams(email=emaill, token=tokenn):
+def open_teams(email, token):
     return get_open_teams(email, token)
 
 
