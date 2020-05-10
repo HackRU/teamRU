@@ -5,7 +5,9 @@ from app.db import teams
 
 def get_open_teams(email, token):
     email = email.strip().lower()
-    if call_validate_endpoint(email, token) == 200:
+    if call_validate_endpoint(email, token) != 200:
+        return return_resp(404, "Invalid request")
+    else:
         if request.method == 'GET':
             data = request.get_json(silent=True)
             if not data or 'filter' not in data or not data['filter']:
@@ -30,5 +32,3 @@ def get_open_teams(email, token):
                 if not all_open_teams:
                     return return_resp(400, "No open teams")
                 return return_resp(200, all_open_teams)
-    else:
-        return return_resp(404, "Invalid request")

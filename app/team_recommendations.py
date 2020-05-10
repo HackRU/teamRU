@@ -5,7 +5,9 @@ from app.db import users, teams
 
 def get_team_recommendations(email, token):
     email = email.strip().lower()
-    if call_validate_endpoint(email, token) == 200:
+    if call_validate_endpoint(email, token) != 200:
+        return return_resp(404, "Invalid request")
+    else:
         if request.method == 'GET':
             user = users.find_one({"_id": email})
             if not user:
@@ -47,5 +49,3 @@ def get_team_recommendations(email, token):
                 return return_resp(400, "No recommendations found")
             else:
                 return return_resp(200, matches)
-    else:
-        return return_resp(404, "Invalid request")

@@ -5,7 +5,9 @@ from app.db import users
 
 def update_profile(email, token):
     email = email.lower().strip()
-    if call_validate_endpoint(email, token) == 200:
+    if call_validate_endpoint(email, token) != 200:
+        return return_resp(404, "Invalid request")
+    else:
         if request.method == 'GET':
             has_profile = users.find_one({"_id": email})
             if not has_profile:
@@ -35,5 +37,3 @@ def update_profile(email, token):
                 users.insert_one(
                     {"_id": email, "skills": skills, "prizes": prizes, "hasateam": False, "potentialteams": []})
                 return return_resp(201, "Profile created")
-    else:
-        return return_resp(404, "Invalid request")

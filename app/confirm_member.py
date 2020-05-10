@@ -5,7 +5,9 @@ from app.db import users, teams
 
 def confirm(email, token):
     email = email.strip().lower()
-    if call_validate_endpoint(email, token) == 200:
+    if call_validate_endpoint(email, token) != 200:
+        return return_resp(404, "Invalid request")
+    else:
         if request.method == 'POST':
             data = request.get_json(silent=True)
             if not data or 'email' not in data or not data['email']:
@@ -22,5 +24,3 @@ def confirm(email, token):
             teams.update_one({"_id": team_name}, {"$push": {"members": hacker}})
             teams.update_one({"_id": team_name}, {"$pull": {"interested": hacker}})
             return return_resp(200, "Success")
-    else:
-        return return_resp(404, "Invalid request")

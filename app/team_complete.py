@@ -5,7 +5,9 @@ from app.db import teams
 
 def mark_team_complete(email, token):
     email = email.strip().lower()
-    if call_validate_endpoint(email, token) == 200:
+    if call_validate_endpoint(email, token) != 200:
+        return return_resp(404, "Invalid request")
+    else:
         if request.method == 'POST':
             team = teams.find_one({"members": {"$all": [email]}})
             if not team:
@@ -18,5 +20,3 @@ def mark_team_complete(email, token):
             else:
                 teams.update_one({"_id": team_name}, {"$set": {"complete": True}})
                 return return_resp(200, "True")
-    else:
-        return return_resp(404, "Invalid request")

@@ -5,7 +5,9 @@ from app.db import teams
 
 def get_team_profile(email, token):
     email = email.strip().lower()
-    if call_validate_endpoint(email, token) == 200:
+    if call_validate_endpoint(email, token) != 200:
+        return return_resp(404, "Invalid request")
+    else:
         if request.method == 'GET':
             team = teams.find_one({"members": {"$all": [email]}})
             if not team:
@@ -23,5 +25,3 @@ def get_team_profile(email, token):
                     members_names.append(name)
                     team.update({"names": members_names})
                 return return_resp(200, team)
-    else:
-        return return_resp(404, "Invalid request")

@@ -5,7 +5,9 @@ from app.db import users, teams
 
 def create_team(email, token):
     email = email.strip().lower()
-    if call_validate_endpoint(email, token) == 200:
+    if call_validate_endpoint(email, token) != 200:
+        return return_resp(404, "Invalid request")
+    else:
         if request.method == 'POST':
             data = request.get_json(silent=True)
             if not data or 'name' not in data or 'desc' not in data or 'skills' not in data or not data['name'] or not data['desc'] or not data['skills']:
@@ -32,5 +34,3 @@ def create_team(email, token):
                     users.update_one({"_id": email}, {"$set": {"hasateam": True}})
                     teams.insert({"_id": team_name, "members": [email], "desc": team_desc, "partnerskills": formatted_skills, "prizes": formatted_prizes, "complete": False, "interested": []})
                     return return_resp(200, "Success")
-    else:
-        return return_resp(404, "Invalid request")

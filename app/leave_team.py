@@ -5,7 +5,9 @@ from app.db import users, teams
 
 def leave(email, token):
     email = email.strip().lower()
-    if call_validate_endpoint(email, token) == 200:
+    if call_validate_endpoint(email, token) != 200:
+        return return_resp(404, "Invalid request")
+    else:
         if request.method == 'POST':
             user_in_a_team = users.find_one({"_id": email, "hasateam": True})
             if not user_in_a_team:
@@ -19,5 +21,3 @@ def leave(email, token):
                 teams.update_one({"_id": team_name}, {"$set": {"complete": False}})
             users.update_one({"_id": email}, {"$set": {"hasateam": False}})
             return return_resp(200, "Success")
-    else:
-        return return_resp(404, "Invalid request")
