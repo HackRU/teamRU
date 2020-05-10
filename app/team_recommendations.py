@@ -1,6 +1,5 @@
-from app.util import call_validate_endpoint, return_resp, login
+from app.util import call_validate_endpoint, return_resp, coll
 from flask import request
-from app.db import users, teams
 
 
 def get_team_recommendations(email, token):
@@ -9,10 +8,10 @@ def get_team_recommendations(email, token):
         return return_resp(404, "Invalid request")
     else:
         if request.method == 'GET':
-            user = users.find_one({"_id": email})
+            user = coll("users").find_one({"_id": email})
             if not user:
                 return return_resp(403, "Invalid user")
-            user_in_a_team = users.find_one({"_id": email, "hasateam": True})
+            user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
             if user_in_a_team:
                 return return_resp(402, "User in a team")
             if 'skills' not in user or not user['skills']:
@@ -25,7 +24,7 @@ def get_team_recommendations(email, token):
             names = set()
             matches = []
             for skill in skills:
-                match = teams.aggregate([
+                match = coll("teams").aggregate([
                     {"$match": {"complete": False, "partnerskills": {"$all": [skill]}}}
                 ])
                 if not match:
@@ -36,7 +35,7 @@ def get_team_recommendations(email, token):
                         matches.append(m)
 
             for prize in prizes:
-                match = teams.aggregate([
+                match = coll("teams").aggregate([
                     {"$match": {"complete": False, "pries": {"$all": [prize]}}}
                 ])
                 if not match:

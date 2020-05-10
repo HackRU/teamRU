@@ -1,6 +1,5 @@
-from app.util import call_validate_endpoint, return_resp
+from app.util import call_validate_endpoint, return_resp, coll
 from flask import request
-from app.db import teams
 
 
 def get_open_teams(email, token):
@@ -11,7 +10,7 @@ def get_open_teams(email, token):
         if request.method == 'GET':
             data = request.get_json(silent=True)
             if not data or 'filter' not in data or not data['filter']:
-                available_teams = teams.find({"complete": False})
+                available_teams = coll("teams").find({"complete": False})
                 all_open_teams = []
                 for x in available_teams:
                     all_open_teams.append(x)
@@ -20,7 +19,7 @@ def get_open_teams(email, token):
                 return return_resp(200, all_open_teams)
             else:
                 search = data['filter'].lower().strip()
-                available_teams = teams.find({"complete": False, "$or": [
+                available_teams = coll("teams").find({"complete": False, "$or": [
                         {"desc": {"$regex": ".*" + search + ".*"}},
                         {"partnerskills": {"$regex": ".*" + search + ".*"}},
                         {"prizes": {"$regex": ".*" + search + ".*"}}

@@ -1,12 +1,20 @@
 from flask import jsonify
 import requests
+import app.config as config
+from pymongo import MongoClient
 
-base_url = "https://api.hackru.org/dev"
+
+def get_db():
+    return MongoClient(config.DB_URI).get_database()
+
+
+def coll(coll_name):
+    return get_db()[config.DB_COLLECTIONS[coll_name]]
 
 
 def call_validate_endpoint(email, token):
     data_dic = {"email": email, "token": token}
-    resp = requests.post(base_url + "/validate", json=data_dic)
+    resp = requests.post(config.BASE_URL + "/validate", json=data_dic)
     resp_parsed = resp.json()
     if resp_parsed["statusCode"] == 400:
         '''{"statusCode":400,"body":"User email not found."}'''
@@ -20,7 +28,7 @@ def call_validate_endpoint(email, token):
 
 def login(email, password):
     data_dic = {"email": email, "password": password}
-    resp = requests.post(base_url + "/authorize", json=data_dic)
+    resp = requests.post(config.BASE_URL + "/authorize", json=data_dic)
     if not resp:
         return 400
     resp_parsed = resp.json()
@@ -31,10 +39,10 @@ def login(email, password):
 
 
 def call_auth_endpoint():
-    email = "teambuilder@hackru.org"
-    password = ""
+    email = config.DIRECTOR_CREDENTIALS["email"]
+    password = config.DIRECTOR_CREDENTIALS["password"]
     data_dic = {"email": email, "password": password}
-    resp = requests.post(base_url + "/authorize", json=data_dic)
+    resp = requests.post(config.BASE_URL + "/authorize", json=data_dic)
     if not resp:
         return 400
     resp_parsed = resp.json()
@@ -47,7 +55,7 @@ def call_auth_endpoint():
 def get_name(token, email):
     dir_email = "teambuilder@hackru.org"
     data_dic = {"email": dir_email, "token": token, "query": {"email": email}}
-    resp = requests.post(base_url + "/read", json=data_dic)
+    resp = requests.post(config.BASE_URL + "/read", json=data_dic)
     if not resp:
         return 400
     resp_parsed = resp.json()

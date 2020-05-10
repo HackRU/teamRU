@@ -1,6 +1,5 @@
-from app.util import call_validate_endpoint, return_resp
+from app.util import call_validate_endpoint, return_resp, coll
 from flask import request
-from app.db import users, teams
 
 
 def leave(email, token):
@@ -9,15 +8,15 @@ def leave(email, token):
         return return_resp(404, "Invalid request")
     else:
         if request.method == 'POST':
-            user_in_a_team = users.find_one({"_id": email, "hasateam": True})
+            user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
             if not user_in_a_team:
                 return return_resp(400, "User doesn't have a tram")
-            team_name = teams.find_one({"members": {"$all": [email]}}, {"_id"})['_id']
-            team_size = len(teams.find_one({"_id": team_name})['members'])
+            team_name = coll("teams").find_one({"members": {"$all": [email]}}, {"_id"})['_id']
+            team_size = len(coll("teams").find_one({"_id": team_name})['members'])
             if team_size == 1:
-                teams.delete_one({"_id": team_name})
+                coll("teams").delete_one({"_id": team_name})
             else:
-                teams.update_one({"_id": team_name}, {"$pull": {"members": email}})
-                teams.update_one({"_id": team_name}, {"$set": {"complete": False}})
-            users.update_one({"_id": email}, {"$set": {"hasateam": False}})
+                coll("teams").update_one({"_id": team_name}, {"$pull": {"members": email}})
+                coll("teams").update_one({"_id": team_name}, {"$set": {"complete": False}})
+            coll("users").update_one({"_id": email}, {"$set": {"hasateam": False}})
             return return_resp(200, "Success")

@@ -1,6 +1,5 @@
-from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name
+from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name, coll
 from flask import request
-from app.db import teams
 
 
 def get_team_profile(email, token):
@@ -9,7 +8,7 @@ def get_team_profile(email, token):
         return return_resp(404, "Invalid request")
     else:
         if request.method == 'GET':
-            team = teams.find_one({"members": {"$all": [email]}})
+            team = coll("teams").find_one({"members": {"$all": [email]}})
             if not team:
                 return return_resp(400, "Team Not found")
             else:
