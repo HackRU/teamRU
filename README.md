@@ -9,7 +9,7 @@ Read more on how to use the API [here](https://github.com/HackRU/teamRU/wiki/Tea
 
 ### How to run the project:
 1) clone the repo
-* After cloning the repo, you have to add the db connnection string in db.py and the director account password in call_auth_endpoint() function in  util.py. You can find them in the teamBuilder chat in discord.
+* After cloning the repo, you have to add all the require info to the config file. You can find them in the teamBuilder chat in discord.
 2) cd to teamRU
 3) run "pip3 install --user -r requirements.txt"
 4) run "export FLASK_APP=run.py"
