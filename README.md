@@ -7,13 +7,22 @@ The purpose of this project is to help hackers find teammates who are interested
 ### API docs:
 Read more on how to use the API [here](https://github.com/HackRU/teamRU/wiki/TeamRU-API).
 
+
+### Flow:
+User has to be logged in through lcs to be able to access their team builder profile <br/>
+Completely new user: create hackrun account -> create teambuilder profile -> teambuilder dashboard <br/>
+User with hackru account: create teambuilder profile -> teambuilder dashboard <br/>
+User with hackru account and teambuilder profile -> teambuilder dashboard<br/>
+Initially, we will only enable the create-profile feature for everyone to create their teambuilder profile so we can have as much information as we can in the database before giving participants recommendations. After 2-3 weeks, we will enable all other features for people to find teammates and get recommendations.
+ 
+
 ### How to run the project:
-1) clone the repo
-* After cloning the repo, you have to add all the require info to the config file. You can find them in the teamBuilder chat in discord.
-2) cd to teamRU
-3) run "pip3 install --user -r requirements.txt"
-4) run "export FLASK_APP=run.py"
-5) run "flask run"
+1) clone the repo 
+2) After cloning the repo, you have to add all the required info to the config file. You can find it in the teamBuilder chat.
+3) cd to teamRU
+4) run "pip3 install --user -r requirements.txt"
+5) run "export FLASK_APP=run.py"
+6) run "flask run"
 
 ### Next Steps:
 1) Unit tests - not sure if i should have a separate db for this
