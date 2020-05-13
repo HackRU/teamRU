@@ -8,13 +8,15 @@ The purpose of this project is to help hackers find teammates who are interested
 Read more on how to use the API [here](https://github.com/HackRU/teamRU/wiki/TeamRU-API).
 
 
-### Flow:
+### Application Flow:
 User has to be logged in through lcs to be able to access their teambuilder profile <br/>
 Completely new user: create hackrun account -> create teambuilder profile -> teambuilder dashboard <br/>
 User with hackru account: create teambuilder profile -> teambuilder dashboard <br/>
 User with hackru account and teambuilder profile -> teambuilder dashboard<br/>
 Initially, we will only enable the create-profile feature for everyone to create their teambuilder profile so we can get everyone's info in the database before giving participants recommendations. After 2-3 weeks, we will enable all other features for people to find teammates and get recommendations.
  
+###Signin Authentication Flow
+Since teambuilder will be part of the main hackru website, I figured that the best way to integrate it with lcs is to pass the email and token each time there is a call to any of the endpoints. Teambuilder doesn't have its own login system/sessions. Everytime there is a call to any of the endpoints and the email and token are passed, validate endpoint from lcs is called to verify that the user is indeed logged in and his session is not expired. 
 
 ### How to run the project:
 1) clone the repo 
@@ -29,6 +31,4 @@ Initially, we will only enable the create-profile feature for everyone to create
 2) Integrate lcs slack endpoint
 3) Deploy
 4) Improve the recommendations algorithm
-5) Signin authentication flow - discuss with Shivan, Mickey and frontend team
-    *I have my own login system for now to test but it shouldn't be used when we deploy
-6) Set up a virtual env
+5) Set up a virtual env

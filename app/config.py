@@ -1,5 +1,5 @@
 
-BASE_URL = ""
+LCS_BASE_URL = ""
 
 
 DIRECTOR_CREDENTIALS = {
