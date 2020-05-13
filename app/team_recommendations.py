@@ -1,9 +1,9 @@
-from app.util import call_validate_endpoint, return_resp, coll
+from app.util import call_validate_endpoint, return_resp, coll, validate_feature_is_enabled
 from flask import request
 
 
-def get_team_recommendations(email, token):
-    email = email.strip().lower()
+@validate_feature_is_enabled("team recommendations")
+def get_team_recommendations():
     if call_validate_endpoint(email, token) != 200:
         return return_resp(404, "Invalid request")
     else:

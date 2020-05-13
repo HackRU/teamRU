@@ -1,9 +1,9 @@
-from app.util import call_validate_endpoint, return_resp, format_string, coll
+from app.util import call_validate_endpoint, return_resp, format_string, coll, validate_feature_is_enabled
 from flask import request
 
 
-def create_team(email, token):
-    email = email.strip().lower()
+@validate_feature_is_enabled("start a team")
+def create_team():
     if call_validate_endpoint(email, token) != 200:
         return return_resp(404, "Invalid request")
     else:

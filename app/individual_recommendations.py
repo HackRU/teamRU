@@ -1,9 +1,9 @@
-from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name, coll
+from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name, coll, validate_feature_is_enabled
 from flask import request
 
 
-def get_individual_recommendations(email, token):
-    email = email.strip().lower()
+@validate_feature_is_enabled("individual recommendations")
+def get_individual_recommendations():
     if call_validate_endpoint(email, token) != 200:
         return return_resp(404, "Invalid request")
     else:

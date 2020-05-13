@@ -13,56 +13,56 @@ from app.interested import user_interested
 
 
 @app.route('/user-profile', methods=['GET', 'POST'])
-def user_profile(email, token):
-    return update_profile(email, token)
+def user_profile():
+    return update_profile()
 
 
 @app.route('/start-a-team', methods=['POST'])
-def start_a_team(email, token):
-    return create_team(email, token)
+def start_a_team():
+    return create_team()
 
 
 @app.route('/leave-team', methods=['POST'])
-def leave_team(email, token):
-    return leave(email, token)
+def leave_team():
+    return leave()
 
 
 @app.route('/add-team-member', methods=['POST'])
-def add_team_member(email, token):
-    return add_member(email, token)
+def add_team_member():
+    return add_member()
 
 
 @app.route('/team-complete', methods=['POST'])
-def team_complete(email, token):
-    return mark_team_complete(email, token)
+def team_complete():
+    return mark_team_complete()
 
 
 @app.route('/open-teams', methods=['GET'])
-def open_teams(email, token):
-    return get_open_teams(email, token)
+def open_teams():
+    return get_open_teams()
 
 
 @app.route('/team-profile', methods=['GET'])
-def team_profile(email, token):
-    return get_team_profile(email, token)
+def team_profile():
+    return get_team_profile()
 
 
 @app.route('/team-recommendations', methods=['GET'])
-def team_recommendations(email, token):
-    return get_team_recommendations(email, token)
+def team_recommendations():
+    return get_team_recommendations()
 
 
 @app.route('/individual-recommendations', methods=['GET'])
-def individual_recommendations(email, token):
-    return get_individual_recommendations(email, token)
+def individual_recommendations():
+    return get_individual_recommendations()
 
 
 @app.route('/interested', methods=['POST'])
-def interested(email, token):
-    return user_interested(email, token)
+def interested():
+    return user_interested()
 
 
 @app.route('/confirm-member', methods=['POST'])
-def confirm_member(email, token):
-    return confirm(email, token)
+def confirm_member():
+    return confirm()
 

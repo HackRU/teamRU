@@ -12,6 +12,19 @@ def coll(coll_name):
     return get_db()[config.DB_COLLECTIONS[coll_name]]
 
 
+def validate_feature_is_enabled(feature):
+    def inner(fn):
+        def rapper():
+            if config.ENABLE_FEATURE[feature] == 1:
+                return fn()
+            elif config.ENABLE_FEATURE[feature] == 0:
+                return return_resp(501, "Feature is disabled")
+            else:
+                return return_resp(502, "Wrong Feature value")
+        return rapper
+    return inner
+
+
 def call_validate_endpoint(email, token):
     data_dic = {"email": email, "token": token}
     resp = requests.post(config.BASE_URL + "/validate", json=data_dic)

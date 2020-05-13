@@ -1,9 +1,9 @@
-from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name, coll
+from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name, coll, validate_feature_is_enabled
 from flask import request
 
 
-def add_member(email, token):
-    email = email.strip().lower()
+@validate_feature_is_enabled("add team member")
+def add_member():
     if call_validate_endpoint(email, token) != 200:
         return return_resp(404, "Invalid request")
     else:

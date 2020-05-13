@@ -1,9 +1,9 @@
-from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name, format_string, coll
+from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name, format_string, coll, validate_feature_is_enabled
 from flask import request
 
 
-def update_profile(email, token):
-    email = email.lower().strip()
+@validate_feature_is_enabled("user profile")
+def update_profile():
     if call_validate_endpoint(email, token) != 200:
         return return_resp(404, "Invalid request")
     else:
