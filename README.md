@@ -9,11 +9,11 @@ Read more on how to use the API [here](https://github.com/HackRU/teamRU/wiki/Tea
 
 
 ### Flow:
-User has to be logged in through lcs to be able to access their team builder profile <br/>
+User has to be logged in through lcs to be able to access their teambuilder profile <br/>
 Completely new user: create hackrun account -> create teambuilder profile -> teambuilder dashboard <br/>
 User with hackru account: create teambuilder profile -> teambuilder dashboard <br/>
 User with hackru account and teambuilder profile -> teambuilder dashboard<br/>
-Initially, we will only enable the create-profile feature for everyone to create their teambuilder profile so we can have as much information as we can in the database before giving participants recommendations. After 2-3 weeks, we will enable all other features for people to find teammates and get recommendations.
+Initially, we will only enable the create-profile feature for everyone to create their teambuilder profile so we can get everyone's info in the database before giving participants recommendations. After 2-3 weeks, we will enable all other features for people to find teammates and get recommendations.
  
 
 ### How to run the project:
