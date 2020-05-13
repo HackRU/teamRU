@@ -15,7 +15,7 @@ User with hackru account: create teambuilder profile -> teambuilder dashboard <b
 User with hackru account and teambuilder profile -> teambuilder dashboard<br/>
 Initially, we will only enable the create-profile feature for everyone to create their teambuilder profile so we can get everyone's info in the database before giving participants recommendations. After 2-3 weeks, we will enable all other features for people to find teammates and get recommendations.
  
-###Signin Authentication Flow
+### Signin Authentication Flow:
 Since teambuilder will be part of the main hackru website, I figured that the best way to integrate it with lcs is to pass the email and token each time there is a call to any of the endpoints. Teambuilder doesn't have its own login system/sessions. Everytime there is a call to any of the endpoints and the email and token are passed, validate endpoint from lcs is called to verify that the user is indeed logged in and his session is not expired. 
 
 ### How to run the project:
@@ -30,5 +30,4 @@ Since teambuilder will be part of the main hackru website, I figured that the be
 1) Unit tests - not sure if i should have a separate db for this
 2) Integrate lcs slack endpoint
 3) Deploy
-4) Improve the recommendations algorithm
-5) Set up a virtual env
+4) Set up a virtual env
