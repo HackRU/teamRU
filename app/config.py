@@ -1,15 +1,14 @@
 
-LCS_BASE_URL = "https://api.hackru.org/dev"
- # *teamBuilder1
-# https://hackru-team-builder.herokuapp.com/
+LCS_BASE_URL = ""
+ 
 DIRECTOR_CREDENTIALS = {
-    "email":  "teambuilder@hackru.org",
-    "password": "teambuilder"
+    "email":  "",
+    "password": ""
 }
 
 
 # uri should contain auth and default database(database name)
-DB_URI = "mongodb+srv://m001-student:amany@cluster0-vdddk.mongodb.net/hackru?retryWrites=true&w=majority"
+DB_URI = ""
 
 
 DB_COLLECTIONS = {
