@@ -1,7 +1,7 @@
 
 LCS_BASE_URL = "https://api.hackru.org/dev"
  # *teamBuilder1
-
+# https://hackru-team-builder.herokuapp.com/
 DIRECTOR_CREDENTIALS = {
     "email":  "teambuilder@hackru.org",
     "password": "teambuilder"
