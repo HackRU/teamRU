@@ -1,1 +1,1 @@
-web: gunicorn pyVidly.wsgi
+web: gunicorn run:app
