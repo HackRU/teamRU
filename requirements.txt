@@ -3,3 +3,5 @@ flask>=1.1.1
 requests>=2.22.0
 dnspython>=1.16.0
 pytest>=5.4.2
+gunicorn>=19.10.0
+jsonschema>=3.2.0

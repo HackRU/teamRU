@@ -1,18 +1,17 @@
-from app.util import call_validate_endpoint, return_resp, format_string, coll, validate_feature_is_enabled
+from app.util import return_resp, format_string
 from flask import request
+from app.db import coll
+from app.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
 
 
-@validate_feature_is_enabled("start a team")
+@ensure_json()
+@ensure_user_logged_in()
+@ensure_feature_is_enabled("start a team")
 def create_team():
     if request.method == 'POST':
         data = request.get_json(silent=True)
-        if not data or 'user_email' not in data or not data['user_email'] or 'token' not in data or not data['token']:
-            return return_resp(408, "Missing email or token")
         email = data['user_email']
-        token = data['token']
         email = email.strip().lower()
-        if call_validate_endpoint(email, token) != 200:
-            return return_resp(404, "Invalid request")
         if not data or 'name' not in data or 'desc' not in data or 'skills' not in data or not data['name'] or not data['desc'] or not data['skills']:
             return {"statusCode": 400, "body": "Required info not found"}
         team_name = data['name'].strip().lower()

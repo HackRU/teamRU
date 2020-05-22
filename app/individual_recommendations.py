@@ -1,18 +1,18 @@
-from app.util import call_validate_endpoint, return_resp, call_auth_endpoint, get_name, coll, validate_feature_is_enabled
+from app.util import return_resp
 from flask import request
+from app.lcs import call_auth_endpoint, get_name
+from app.db import coll
+from app.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
 
 
-@validate_feature_is_enabled("individual recommendations")
+@ensure_json()
+@ensure_user_logged_in()
+@ensure_feature_is_enabled("individual recommendations")
 def get_individual_recommendations():
     if request.method == 'GET':
         data = request.get_json(silent=True)
-        if not data or 'user_email' not in data or not data['user_email'] or 'token' not in data or not data['token']:
-            return return_resp(408, "Missing email or token")
         email = data['user_email']
-        token = data['token']
         email = email.strip().lower()
-        if call_validate_endpoint(email, token) != 200:
-            return return_resp(404, "Invalid request")
         team = coll("teams").find_one({"members": {"$all": [email]}})
         if not team:
             return return_resp(400, "User not in a team")
