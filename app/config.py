@@ -1,6 +1,6 @@
 
 LCS_BASE_URL = ""
- 
+
 DIRECTOR_CREDENTIALS = {
     "email":  "",
     "password": ""
@@ -8,7 +8,7 @@ DIRECTOR_CREDENTIALS = {
 
 
 # uri should contain auth and default database(database name)
-DB_URI = ""
+DB_URI = "mongodb://127.0.0.1:27017/hackrd"
 
 
 DB_COLLECTIONS = {
