@@ -4,10 +4,9 @@ from app.db import coll
 
 
 def get_user_profile(email):
-    has_profile = coll("users").find_one({"_id": email})
-    if not has_profile:
-        return return_resp(200, "User Not found")
     user_profile = coll("users").find_one({"_id": email})
+    if not user_profile:
+        return return_resp(200, "User Not found")
     dir_token = call_auth_endpoint()
     if dir_token != 400:
         name = get_name(dir_token, email)

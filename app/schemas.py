@@ -54,7 +54,6 @@ def ensure_user_logged_in():
                 return return_resp(408, "Missing email or token")
             email = data["user_email"]
             token = data["token"]
-            # token = request.headers["token"] #TODO Get token from header
             email = email.strip().lower()
             if call_validate_endpoint(email, token) != 200:
                 return return_resp(404, "Invalid request")

@@ -18,7 +18,7 @@ from app.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_en
 
 @app.route("/user-profile", methods=["GET", "POST"])
 @ensure_json()
-# @ensure_user_logged_in()
+@ensure_user_logged_in()
 @ensure_feature_is_enabled("user profile")
 def user_profile():
     data = request.get_json(silent=True)
