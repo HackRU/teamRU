@@ -12,7 +12,7 @@ from app.open_teams import get_open_teams
 from app.team_profile import get_team_profile
 from app.interested import user_interested
 
-from app.util import format_string
+from app.util import format_string, return_resp
 from app.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
 
 
@@ -42,8 +42,14 @@ def start_a_team():
 
 
 @app.route("/leave-team", methods=["POST"])
+@ensure_json()
+@ensure_user_logged_in()
+@ensure_feature_is_enabled("leave team")
 def leave_team():
-    return leave()
+    data = request.get_json(silent=True)
+    email = data["user_email"]
+    email = email.strip().lower()
+    return leave(email)
 
 
 @app.route("/add-team-member", methods=["POST"])
@@ -67,18 +73,39 @@ def team_profile():
 
 
 @app.route("/team-recommendations", methods=["GET"])
+@ensure_json()
+@ensure_user_logged_in()
+@ensure_feature_is_enabled("team recommendations")
 def team_recommendations():
-    return get_team_recommendations()
+    data = request.get_json(silent=True)
+    email = data["user_email"]
+    email = email.strip().lower()
+    return get_team_recommendations(email)
 
 
 @app.route("/individual-recommendations", methods=["GET"])
+@ensure_json()
+@ensure_user_logged_in()
+@ensure_feature_is_enabled("individual recommendations")
 def individual_recommendations():
-    return get_individual_recommendations()
+    data = request.get_json(silent=True)
+    email = data["user_email"]
+    email = email.strip().lower()
+    return get_individual_recommendations(email)
 
 
 @app.route("/interested", methods=["POST"])
+@ensure_json()
+@ensure_user_logged_in()
+@ensure_feature_is_enabled("interested")
 def interested():
-    return user_interested()
+    data = request.get_json(silent=True)
+    email = data["user_email"]
+    email = email.strip().lower()
+    if not data or "name" not in data or not data["name"]:
+        return return_resp(401, "Missing inf")
+    name = data["name"]
+    return user_interested(email, name)
 
 
 @app.route("/confirm-member", methods=["POST"])
