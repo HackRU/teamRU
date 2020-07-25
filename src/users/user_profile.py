@@ -1,7 +1,7 @@
-from app.util import return_resp
-from app.lcs import call_auth_endpoint, get_name
-from app.db import coll
-
+from src.flaskapp.lcs import call_auth_endpoint, get_name
+from src.flaskapp.util import return_resp, format_string
+from src.flaskapp.db import coll
+from src.flaskapp.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
 
 def get_user_profile(email):
     user_profile = coll("users").find_one({"_id": email})
@@ -14,7 +14,6 @@ def get_user_profile(email):
         name = ""
     user_profile.update({"name": name})
     return return_resp(200, user_profile)
-
 
 def create_user_profile(email, **kwargs):
     # NOTE Originally skills was required for user to create profile

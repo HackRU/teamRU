@@ -1,8 +1,8 @@
-from app.util import return_resp
 from flask import request
-from app.db import coll
-from app.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
 
+from src.flaskapp.util import return_resp
+from src.flaskapp.db import coll
+from src.flaskapp.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
 
 def user_interested(email, team_name):
     if request.method == "POST":
