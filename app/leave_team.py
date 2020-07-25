@@ -4,19 +4,15 @@ from app.db import coll
 from app.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
 
 
-@ensure_json()
-@ensure_user_logged_in()
-@ensure_feature_is_enabled("leave team")
-def leave():
-    if request.method == 'POST':
-        data = request.get_json(silent=True)
-        email = data['user_email']
-        email = email.strip().lower()
+def leave(email):
+    if request.method == "POST":
         user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
         if not user_in_a_team:
             return return_resp(400, "User doesn't have a tram")
-        team_name = coll("teams").find_one({"members": {"$all": [email]}}, {"_id"})['_id']
-        team_size = len(coll("teams").find_one({"_id": team_name})['members'])
+        team_name = coll("teams").find_one({"members": {"$all": [email]}}, {"_id"})[
+            "_id"
+        ]
+        team_size = len(coll("teams").find_one({"_id": team_name})["members"])
         if team_size == 1:
             coll("teams").delete_one({"_id": team_name})
         else:

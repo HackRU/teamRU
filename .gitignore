@@ -2,3 +2,5 @@
 .idea
 *.iml
 *config.py
+settings.json
+config.py
