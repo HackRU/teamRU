@@ -1,9 +1,14 @@
-from app.util import return_resp
-from app.lcs import call_auth_endpoint, get_name
-from app.db import coll
+from src.flaskapp.lcs import call_auth_endpoint, get_name
+from src.flaskapp.util import return_resp, format_string
+from src.flaskapp.db import coll
+from src.flaskapp.schemas import (
+    ensure_json,
+    ensure_user_logged_in,
+    ensure_feature_is_enabled,
+)
 
 
-def get_user_profile(email):
+def get_user_profile(email):  # GET
     user_profile = coll("users").find_one({"_id": email})
     if not user_profile:
         return return_resp(200, "User Not found")
@@ -16,7 +21,7 @@ def get_user_profile(email):
     return return_resp(200, user_profile)
 
 
-def create_user_profile(email, **kwargs):
+def create_user_profile(email, **kwargs):  # POST
     # NOTE Originally skills was required for user to create profile
     # if not data or "skills" not in data or not data["skills"]: required
     #     return return_resp(400, "Required info not found")

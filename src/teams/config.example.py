@@ -4,7 +4,7 @@ DIRECTOR_CREDENTIALS = {"email": "", "password": ""}
 
 
 # uri should contain auth and default database(database name)
-DB_URI = "mongodb://127.0.0.1:27017/hackrd"
+DB_URI = ""
 
 
 DB_COLLECTIONS = {"users": "users", "teams": "teams"}

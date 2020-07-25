@@ -1,20 +1,22 @@
-from flask import request
-from app import app
-from app.user_profile import get_user_profile, create_user_profile
-from app.start_a_team import create_team
-from app.add_team_member import add_member
-from app.leave_team import leave
-from app.team_recommendations import get_team_recommendations
-from app.confirm_member import confirm
-from app.individual_recommendations import get_individual_recommendations
-from app.team_complete import mark_team_complete
-from app.open_teams import get_open_teams
-from app.team_profile import get_team_profile
-from app.interested import user_interested
+from flask import Flask, request
 
-from app.util import format_string, return_resp
-from app.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
+from src.users.user_profile import get_user_profile, create_user_profile
+from src.users.individual_recommendations import get_individual_recommendations
+from src.users.team_recommendations import get_team_recommendations
+from src.users.interested import user_interested
+from src.users.leave_team import leave
 
+from src.teams.team_profile import get_team_profile
+from src.teams.open_teams import get_open_teams
+from src.teams.start_a_team import create_team
+from src.teams.add_team_member import add_member
+from src.teams.confirm_member import confirm
+from src.teams.team_complete import mark_team_complete
+
+from src.flaskapp.util import format_string, return_resp
+from src.flaskapp.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
+
+app = Flask(__name__)
 
 @app.route("/user-profile", methods=["GET", "POST"])
 @ensure_json()

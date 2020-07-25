@@ -1,13 +1,15 @@
-from functools import wraps
 from flask import request
+from functools import wraps
 from jsonschema import Draft4Validator
-from app.util import return_resp
-from app.lcs import call_validate_endpoint
-import app.config as config
+
+import src.flaskapp.config as config
+from src.flaskapp.lcs import call_validate_endpoint
+from src.flaskapp.util import return_resp
 
 
 def ensure_feature_is_enabled(feature):
     def inner(fn):
+        @wraps(fn)
         def wrapper():
             if config.ENABLE_FEATURE[feature] == 1:
                 return fn()
