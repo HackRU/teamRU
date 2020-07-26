@@ -1,3 +1,16 @@
+# Virtual environment
+venv/
+
+# Config
+config.py
+
+# Python
 *.pyc
-.idea
+__pycache__/
+
+# IntelliJ
 *.iml
+.idea/
+
+# VSCode
+.vscode/
