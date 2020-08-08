@@ -25,11 +25,7 @@ app = Flask(__name__)
 
 
 @app.route("/user-profile", methods=["GET", "POST"])
-<<<<<<< HEAD
-# @ensure_json()
-=======
 @ensure_json()
->>>>>>> 60d5414739f632846331633b5ee8e567451fcbae
 # @ensure_user_logged_in()
 @ensure_feature_is_enabled("user profile")
 def user_profile():
@@ -54,17 +50,24 @@ def user_profile():
 @ensure_feature_is_enabled("start a team")
 def start_a_team():
     data = request.get_json(silent=True)
-    email = data['user_email'].strip().lower()
-    if not data or 'name' not in data or 'desc' not in data or 'skills' not in data or not data['name'] \
-            or not data['desc'] or not data['skills']:
+    email = data["user_email"].strip().lower()
+    if (
+        not data
+        or "name" not in data
+        or "desc" not in data
+        or "skills" not in data
+        or not data["name"]
+        or not data["desc"]
+        or not data["skills"]
+    ):
         return {"statusCode": 400, "body": "Required info not found"}
-    team_name = data['name'].strip().lower()
-    team_desc = data['desc'].strip().lower()
-    partner_skills = data['skills']
+    team_name = data["name"].strip().lower()
+    team_desc = data["desc"].strip().lower()
+    partner_skills = data["skills"]
     formatted_skills = format_string(partner_skills)
     formatted_prizes = []
-    if 'prizes' in data:
-        prizes = data['prizes']
+    if "prizes" in data:
+        prizes = data["prizes"]
         formatted_prizes = format_string(prizes)
     return create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
 
@@ -86,10 +89,10 @@ def leave_team():
 @app.route("/add-team-member", methods=["POST"])
 def add_team_member():
     data = request.get_json(silent=True)
-    email = data['user_email'].strip().lower()
-    if not data or 'email' not in data or not data['email']:
+    email = data["user_email"].strip().lower()
+    if not data or "email" not in data or not data["email"]:
         return return_resp(400, "Required info not found")
-    partner_email = data['email'].strip().lower()
+    partner_email = data["email"].strip().lower()
     return add_member(email, partner_email)
 
 
@@ -99,7 +102,7 @@ def add_team_member():
 @app.route("/team-complete", methods=["POST"])
 def team_complete():
     data = request.get_json(silent=True)
-    email = data['user_email']
+    email = data["user_email"]
     email = email.strip().lower()
     team = coll("teams").find_one({"members": {"$all": [email]}})
     if not team:
@@ -113,10 +116,10 @@ def team_complete():
 @app.route("/open-teams", methods=["GET"])
 def open_teams():
     data = request.get_json(silent=True)
-    if 'filter' not in data or not data['filter']:
+    if "filter" not in data or not data["filter"]:
         search = None
     else:
-        search = data['filter']
+        search = data["filter"]
 
     return return_open_teams(search)
 
@@ -178,8 +181,8 @@ def interested():
 @app.route("/confirm-member", methods=["POST"])
 def confirm_member():
     data = request.get_json(silent=True)
-    email = data['user_email'].strip().lower()
-    if not data or 'email' not in data or not data['email']:
+    email = data["user_email"].strip().lower()
+    if not data or "email" not in data or not data["email"]:
         return return_resp(401, "Missing inf")
-    hacker = data['email'].strip().lower()
+    hacker = data["email"].strip().lower()
     return confirm(email, hacker)
