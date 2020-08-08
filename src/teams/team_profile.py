@@ -14,7 +14,7 @@ from src.flaskapp.schemas import (
 def get_team_profile():  # GET
     data = request.get_json(silent=True)
     email = data["user_email"]
-    email = email.strip().lower()
+    email = format_string(email)
     team = coll("teams").find_one({"members": {"$all": [email]}})
     if not team:
         return return_resp(400, "Team Not found")

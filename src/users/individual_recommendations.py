@@ -9,6 +9,9 @@ from src.flaskapp.schemas import (
 
 
 def get_individual_recommendations(email):  # GET
+    """
+    
+    """
     team = coll("teams").find_one({"members": {"$all": [email]}})
     if not team:
         return return_resp(400, "User not in a team")

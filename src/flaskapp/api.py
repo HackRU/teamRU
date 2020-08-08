@@ -14,27 +14,32 @@ from src.teams.confirm_member import confirm
 from src.teams.team_complete import mark_team_complete
 
 from src.flaskapp.util import format_string, return_resp
-from src.flaskapp.schemas import ensure_json, ensure_user_logged_in, ensure_feature_is_enabled
+from src.flaskapp.schemas import (
+    ensure_json,
+    ensure_user_logged_in,
+    ensure_feature_is_enabled,
+)
 
 app = Flask(__name__)
 
+
 @app.route("/user-profile", methods=["GET", "POST"])
-@ensure_json()
-@ensure_user_logged_in()
+# @ensure_json()
+# @ensure_user_logged_in()
 @ensure_feature_is_enabled("user profile")
 def user_profile():
     data = request.get_json(silent=True)
     email = data["user_email"]
-    email = email.strip().lower()
+    email = format_string(email)
     if request.method == "GET":
         return get_user_profile(email)
     elif request.method == "POST":
         prizes = []
         skills = []
         if "prizes" in data:
-            prizes = format_string(data["prizes"].strip().lower())
+            prizes = format_string(format_string(data["prizes"]))
         if "skills" in data:
-            skills = format_string(data["skills"].strip().lower())
+            skills = format_string(format_string(data["skills"]))
         return create_user_profile(email, prizes=prizes, skills=skills)
 
 
@@ -50,7 +55,7 @@ def start_a_team():
 def leave_team():
     data = request.get_json(silent=True)
     email = data["user_email"]
-    email = email.strip().lower()
+    email = format_string(email)
     return leave(email)
 
 
@@ -81,7 +86,7 @@ def team_profile():
 def team_recommendations():
     data = request.get_json(silent=True)
     email = data["user_email"]
-    email = email.strip().lower()
+    email = format_string(email)
     return get_team_recommendations(email)
 
 
@@ -92,7 +97,7 @@ def team_recommendations():
 def individual_recommendations():
     data = request.get_json(silent=True)
     email = data["user_email"]
-    email = email.strip().lower()
+    email = format_string(email)
     return get_individual_recommendations(email)
 
 
@@ -103,7 +108,7 @@ def individual_recommendations():
 def interested():
     data = request.get_json(silent=True)
     email = data["user_email"]
-    email = email.strip().lower()
+    email = format_string(email)
     if not data or "name" not in data or not data["name"]:
         return return_resp(401, "Missing inf")
     name = data["name"]
