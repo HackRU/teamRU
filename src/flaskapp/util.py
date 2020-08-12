@@ -7,13 +7,12 @@ def format_string(s):
 
     Determines the type of the input. If it is a string then strips leading spaces and lowercases all letters. If it is a list, then the aforementioned process is applied to each of the list elements. 
 
-    Arg: s: string or list of strings that needs to be formatted
+    Arg: 
+        s: string or list of strings that needs to be formatted
 
-    Return: a formated string is returned if a string is provided
+    Return: 
+        a formated string is returned if a string is provided
     a formated list is returned if a list is provided
-
-    Raise:
-        TypeError: the input cannot be cast to a string type
     """
     if isinstance(s, str):
         return s.strip().lower()
@@ -26,12 +25,11 @@ def format_string(s):
                 try:
                     res.append(str(string).strip().lower())
                 except:
-                    raise TypeError  # NOTE we can handle the error differently later
+                    res.append(
+                        string
+                    )  # NOTE when the element is not of string typ (we can handle this case different if necessary)
         return res
-    try:
-        return str(s).strip().lower()
-    except:
-        raise TypeError  # NOTE we can handle the error differently later
+    return s  # NOTE Simply returns the input if the input is not a string or a list
 
     #  TestCases:
     #     print(format_string("  JaS on   "))

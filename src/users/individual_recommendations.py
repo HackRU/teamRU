@@ -1,16 +1,18 @@
 from src.flaskapp.lcs import call_auth_endpoint, get_name
 from src.flaskapp.util import return_resp
 from src.flaskapp.db import coll
-from src.flaskapp.schemas import (
-    ensure_json,
-    ensure_user_logged_in,
-    ensure_feature_is_enabled,
-)
 
 
 def get_individual_recommendations(email):  # GET
-    """
-    
+    """Finds recommendations of individuals for the team
+
+    The current matching algorithm finds individuals that are not in a team already by matching using partnerskills or prizes 
+
+    Args: 
+        email: the email of the individual (already in a team) that wants other people to join his team recommendation
+        
+    Return:
+        a list of recommmend indviduals to join your team
     """
     team = coll("teams").find_one({"members": {"$all": [email]}})
     if not team:
@@ -58,5 +60,4 @@ def get_individual_recommendations(email):  # GET
                 matches.append(m)
     if not matches:
         return return_resp(402, "No recommendations found")
-    else:
-        return return_resp(200, matches)
+    return return_resp(200, matches)
