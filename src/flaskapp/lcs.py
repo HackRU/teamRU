@@ -2,6 +2,7 @@ import requests
 
 import src.flaskapp.config as config
 
+
 def call_auth_endpoint():
     email = config.DIRECTOR_CREDENTIALS["email"]
     password = config.DIRECTOR_CREDENTIALS["password"]
@@ -14,6 +15,7 @@ def call_auth_endpoint():
         return resp_parsed['body']["auth"]["token"]
     else:
         return 400
+
 
 def get_name(token, email):
     dir_email = "teambuilder@hackru.org"
@@ -34,6 +36,7 @@ def get_name(token, email):
     else:
         return 400
 
+
 def call_validate_endpoint(email, token):
     data_dic = {"email": email, "token": token}
     resp = requests.post(config.LCS_BASE_URL + "/validate", json=data_dic)
@@ -46,6 +49,7 @@ def call_validate_endpoint(email, token):
         return resp_parsed
     if resp_parsed["statusCode"] == 200:
         return 200
+
 
 def login(email, password):
     data_dic = {"email": email, "password": password}

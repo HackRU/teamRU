@@ -10,6 +10,18 @@ from src.flaskapp.schemas import (
 
 
 def mark_team_complete(team):
+    """reverse team completion status
+
+       change team completion status:
+        if it was incomplete, mark it complete
+        if it was complete, mark it incomplete.
+
+       Args:
+           team:team object
+
+       Return:
+            response object
+       """
     team_name = team["_id"]
     team_complete = team["complete"]
     if team_complete is True:

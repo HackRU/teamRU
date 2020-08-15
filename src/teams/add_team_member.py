@@ -11,11 +11,22 @@ from src.flaskapp.schemas import (
 
 
 def add_member(email, partner_email):  # if request.method == 'POST'
+    """invite new member
+
+       Send invite to a potential teammate, from a member.
+
+       Args:
+           email: the email of the individual already in the the team
+           partner_email: email of the member being added
+
+       Return:
+            response object
+       """
     dir_token = call_auth_endpoint()
     if dir_token == 400:
         return return_resp(401, "auth endpoint failed")
     if get_name(dir_token, partner_email) == 400:
-        return return_resp(402, "Partner doesn't have a hackru account")
+        return return_resp(402, "Partner doesn't have a hackRU account")
     team = coll("teams").find_one({"members": {"$all": [email]}})
     if not team:
         return return_resp(405, "User not in a team")

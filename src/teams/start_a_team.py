@@ -10,6 +10,20 @@ from src.flaskapp.schemas import (
 
 
 def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes):
+    """initialize team
+
+       User creating a team
+
+       Args:
+           team_name: name of the team
+           email: the email of the individual (already in a team) that wants other people to join his team recommendation
+           team_desc: team description
+           formatted_skills: Preferred skills for the team
+           formatted_prizes: team goal/prize
+
+       Return:
+            response object(403:Invalid user, 401:Invalid name, 402:User In a team, 200: Success)
+       """
     team_exist = coll("teams").find_one({"_id": str(team_name)})
     user_exists = coll("users").find_one({"_id": email})
 

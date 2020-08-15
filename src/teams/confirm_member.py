@@ -9,7 +9,19 @@ from src.flaskapp.schemas import (
 )
 
 
+# same issue here,
 def confirm(email, hacker):  # if request.method == 'POST'
+    """confirm new member
+
+       team member accept a new member's request to join.
+
+       Args:
+           email: the email of the individual already in the the team
+           hacker: user id for new member
+
+       Return:
+            response object
+       """
     team_name = coll("teams").find_one({"members": {"$all": [email]}}, {"_id"})["_id"]
     team = coll("teams").find_one({"_id": team_name})
     team_members = team["members"]

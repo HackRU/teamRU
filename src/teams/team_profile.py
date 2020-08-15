@@ -11,6 +11,16 @@ from src.flaskapp.schemas import (
 
 
 def get_team_profile(team):  # GET
+    """get team information
+
+       returns team information as text in json
+
+       Args:
+           team: team object
+
+       Return:
+            Jsonified team info
+       """
     members = team["members"]
     members_names = []
     for member in members:
