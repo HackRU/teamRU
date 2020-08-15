@@ -22,6 +22,7 @@ def mark_team_complete(team):
        Return:
             response object
        """
+    # TODO: Check size of team before allowing user actions (if team size is 4, don't let them mark open)
     team_name = team["_id"]
     team_complete = team["complete"]
     if team_complete is True:

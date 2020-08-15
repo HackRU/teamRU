@@ -48,10 +48,7 @@ def create_user_profile(email, **kwargs):  # POST
     prizes = kwargs["prizes"] if kwargs["prizes"] else user_exists["prizes"]
     skills = kwargs["skills"] if kwargs["skills"] else user_exists["skills"]
     if user_exists:
-        coll("users").update(
-            {"_id": email}, {"$set": {"skills": skills, "prizes": prizes}}
-        )
-        return return_resp(200, "Successful update")
+        return return_resp(409, "User already exists")
 
     coll("users").insert_one(
         {
@@ -63,3 +60,16 @@ def create_user_profile(email, **kwargs):  # POST
         }
     )
     return return_resp(201, "Profile created")
+
+def update_user_profile(email, **kwargs): # PUT
+    prizes = kwargs["prizes"]
+    skills = kwargs["skills"]
+
+    user_exists = coll("users").find_one({"_id": email})
+    if not user_exists:
+        return return_resp(404, "User does not exist")
+
+    coll("users").update(
+        {"_id": email}, {"$set": {"skills": skills, "prizes": prizes}}
+    )
+    return return_resp(200, "Successful update")
