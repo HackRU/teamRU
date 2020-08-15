@@ -29,3 +29,46 @@
     6.  Create a file called `config.py` inside of `/src/flaskapp/` folder
     7.  Copy the contents of `config.example.py` into `config.py`
     8.  Insert `mongodb://127.0.0.1:27017/<name_of_database>` in the `DB_URI` field inside of `config.py` 
+
+
+## Styling and Documentation
+
+In the long term, we want to make sure that code is properly styled and commented to make it easier for developers to maintain and enhance.
+
+**Styling**
+
+To achieve this on our current codebase, we will use a combination of pylint and black.
+
+[pylint](https://www.pylint.org/)
+- Useful for identifying issues such as import order, naming conventions, missing docstrings, etc.
+- Doesn't actually make any changes, but provides a list of suggestions that can be made to improve the code
+- All pylint codes can be found [here](http://pylint-messages.wikidot.com/all-codes)
+
+[black](https://black.readthedocs.io/en/stable/)
+- Aggressive but useful for creating standardized code styling
+- Automatically fixes issues such as files ending without newlines, single quotes instead of double quotes, trailing whitespace, etc.
+
+In these instances where we feel like ignoring pylint warnings, or where pylint and black disagree, we will suppress pylint. These issues will be handled on a case-by-case basis.
+
+**Comments/Documentation**
+
+In general, [Google's Python Style Guide](https://google.github.io/styleguide/pyguide.html) is a great resource. Specifically, we will be using their guidelines on [comments and docstrings](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) to document our code. Again, this isn't set in stone - any disagreement with the styling conventions can be handled on a case-by-case basis.
+
+**Workflow**
+
+In general, the developer workflow should look a little like this:
+
+```
+write code
+run black
+run pylint
+while pylint raises warnings:
+    for warning in warnings:
+        if warning is important:
+            fix it
+        else:
+            suppress it
+    run pylint
+run black
+push code
+```
