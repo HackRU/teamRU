@@ -136,8 +136,8 @@ def teams():
             or not data["desc"]
             or not data["skills"]
         ):
-            # TODO use return_resp
-            return {"statusCode": 400, "body": "Required info not found"}
+            # TODO use return_resp (done)
+            return return_resp(400, "Required info not found")
         team_name = format_string(data["name"])
         team_desc = format_string(data["desc"])
         skills = format_string(data["skills"])
@@ -153,19 +153,14 @@ def teams():
 def single_team(user_id):
     if request.method == "GET":
         # Previously /team-profile
-        # TODO Update this to use user_id
-        # TODO Remove coll from this file - db processing should not be here
-        data = request.get_json(silent=True)
-        email = data["user_email"]
-        email = email.strip().lower()
-        team = coll("teams").find_one({"members": {"$all": [email]}})
-        if not team:
-            return return_resp(400, "Team Not found")
-        else:
-            return get_team_profile(team)
+        # TODO Update this to use user_id   (done)
+        # TODO Remove coll from this file - db processing should not be here(done)
+        # data = request.get_json(silent=True) (uncertain usage)
+        email = base64.urlsafe_b64decode(user_id.encode()).decode()
+        return get_team_profile(email)
 
     if request.method == "PUT":
-        # TODO Update team profile
+        # TODO Update team profile （what can the team update)
 
 @app.route("/teams/<user_id>/complete", methods=["PUT"])
 # @ensure_json()

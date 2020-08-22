@@ -22,10 +22,11 @@ def mark_team_complete(team):
        Return:
             response object
        """
-    # TODO: Check size of team before allowing user actions (if team size is 4, don't let them mark open)
+    # TODO: Check size of team before allowing user actions (if team size is 4, don't let them mark open) (done)
     team_name = team["_id"]
     team_complete = team["complete"]
-    if team_complete is True:
+    team_size = len(team["members"])
+    if team_complete is True and team_size <= 4:
         coll("teams").update_one({"_id": team_name}, {"$set": {"complete": False}})
         return return_resp(200, "False")
     else:

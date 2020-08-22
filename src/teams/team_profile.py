@@ -10,26 +10,32 @@ from src.flaskapp.schemas import (
 )
 
 
-def get_team_profile(team):  # GET
+def get_team_profile(email):  # GET
     """get team information
 
        returns team information as text in json
 
        Args:
-           team: team object
+           email: email of any one of team member
 
        Return:
             Jsonified team info
        """
-    members = team["members"]
-    members_names = []
-    for member in members:
-        token = call_auth_endpoint()
-        if token == 200:
-            continue
-        name = get_name(token, member)
-        if name == 200:
-            continue
-        members_names.append(name)
-        team.update({"names": members_names})
-    return return_resp(200, team)
+
+    team = coll("teams").find_one({"members": {"$all": [email]}})
+    if not team:
+        return return_resp(400, "Team Not found")
+    else:
+        members = team["members"]
+        members_names = []
+        for member in members:
+            token = call_auth_endpoint()
+            if token == 200:
+                continue
+            name = get_name(token, member)
+            if name == 200:
+                continue
+            members_names.append(name)
+            team.update({"names": members_names})
+        return return_resp(200, team)
+
