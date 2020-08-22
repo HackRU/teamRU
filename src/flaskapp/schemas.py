@@ -4,7 +4,8 @@ from jsonschema import Draft4Validator
 
 import src.flaskapp.config as config
 from src.flaskapp.lcs import call_validate_endpoint
-from src.flaskapp.util import return_resp
+from src.flaskapp.util import format_string, return_resp
+
 
 
 def ensure_feature_is_enabled(feature):
@@ -45,18 +46,18 @@ def ensure_user_logged_in():
     def wrapper(fn):
         @wraps(fn)
         def wrapped():
-            data = request.get_json(force=True)
-            if (
-                not data
-                or "user_email" not in data
-                or not data["user_email"]
-                or "token" not in data
-                or not data["token"]
-            ):
-                return return_resp(408, "Missing email or token")
+            # data = request.get_json(force=True)
+            # if (
+            #     not data
+            #     or "user_email" not in data
+            #     or not data["user_email"]
+            #     or "token" not in data
+            #     or not data["token"]
+            # ):
+            #     return return_resp(408, "Missing email or token")
             email = data["user_email"]
-            token = data["token"]
-            email = email.strip().lower()
+            # token = data["token"]
+            email = format_string(email)
             if call_validate_endpoint(email, token) != 200:
                 return return_resp(404, "Invalid request")
             else:

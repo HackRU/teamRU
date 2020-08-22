@@ -1,13 +1,19 @@
 from src.flaskapp.util import return_resp
 from src.flaskapp.db import coll
-from src.flaskapp.schemas import (
-    ensure_json,
-    ensure_user_logged_in,
-    ensure_feature_is_enabled,
-)
 
 
 def get_team_recommendations(email):  # GET
+    """Finds recommendations of teams for this individual to join
+
+    The current matching algorithms finds teams that are not full already by matching on prizes and skills.
+
+    Args:
+        email: the email of the individual that wants recommendations of teams to join
+
+    Return:
+        a list of recommmended teams to join
+
+    """
     user = coll("users").find_one({"_id": email})
     if not user:
         return return_resp(403, "Invalid user")
@@ -35,7 +41,7 @@ def get_team_recommendations(email):  # GET
                 matches.append(m)
     for prize in prizes:
         match = coll("teams").aggregate(
-            [{"$match": {"complete": False, "pries": {"$all": [prize]}}}]
+            [{"$match": {"complete": False, "prizes": {"$all": [prize]}}}]
         )
         if not match:
             continue
@@ -45,6 +51,5 @@ def get_team_recommendations(email):  # GET
                 matches.append(m)
     if not matches:
         return return_resp(400, "No recommendations found")
-    else:
-        return return_resp(200, matches)
+    return return_resp(200, matches)
 

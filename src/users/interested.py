@@ -1,13 +1,19 @@
 from src.flaskapp.util import return_resp
 from src.flaskapp.db import coll
-from src.flaskapp.schemas import (
-    ensure_json,
-    ensure_user_logged_in,
-    ensure_feature_is_enabled,
-)
 
 
 def user_interested(email, team_name):  # POST
+    """Adds this user to a team's interested list
+
+    If an individual is interested in joining a team then he or she can be put into the interested section of a team
+
+    Args:
+        email: the email of the individual that is interested
+        team_name: the name of the team that the individual is interested in
+
+    Return:
+        response object
+    """
     user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
     if user_in_a_team:
         return return_resp(403, "User in a team")

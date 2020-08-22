@@ -1,13 +1,18 @@
 from src.flaskapp.util import return_resp
 from src.flaskapp.db import coll
-from src.flaskapp.schemas import (
-    ensure_json,
-    ensure_user_logged_in,
-    ensure_feature_is_enabled,
-)
 
 
 def leave(email):  # POST
+    """the user leaves a team
+
+    Removes the individual from the team
+
+    Args:
+        email: the email of the individual that wants to leave the team
+
+    Return:
+        response object
+    """
     user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
     if not user_in_a_team:
         return return_resp(400, "User doesn't have a tram")
