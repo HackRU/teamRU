@@ -1,6 +1,6 @@
 from flask import request
 
-from src.flaskapp.util import format_string, return_resp
+from src.flaskapp.util import format_string
 from src.flaskapp.db import coll
 from src.flaskapp.schemas import (
     ensure_json,
@@ -28,13 +28,13 @@ def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
     user_exists = coll("users").find_one({"_id": email})
 
     if not user_exists:
-        return return_resp(403, "Invalid user")
+        return {"message": "Invalid user"}, 403
     if team_exist:
-        return return_resp(401, "Invalid name")
+        return {"message": "Invalid name"}, 401
     else:
         user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
         if user_in_a_team:
-            return return_resp(402, "User in a team")
+            return {"message": "User in a team"}, 402
         else:
             coll("users").update_one({"_id": email}, {"$set": {"hasateam": True}})
             coll("teams").insert(
@@ -48,4 +48,4 @@ def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
                     "interested": [],
                 }
             )
-            return return_resp(200, "Success")
+            return {"message": "Success"}, 200

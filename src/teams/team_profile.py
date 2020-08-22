@@ -1,5 +1,4 @@
 from src.flaskapp.lcs import call_auth_endpoint, get_name
-from src.flaskapp.util import return_resp
 from src.flaskapp.db import coll
 from src.flaskapp.schemas import (
     ensure_json,
@@ -30,4 +29,4 @@ def get_team_profile(team):  # GET
             continue
         members_names.append(name)
         team.update({"names": members_names})
-    return return_resp(200, team)
+    return {"team": team}, 200

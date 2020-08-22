@@ -1,4 +1,4 @@
-from src.flaskapp.util import return_resp
+from src.flaskapp.util import {"message": 
 from src.flaskapp.db import coll
 
 
@@ -16,12 +16,12 @@ def get_team_recommendations(email):  # GET
     """
     user = coll("users").find_one({"_id": email})
     if not user:
-        return return_resp(403, "Invalid user")
+        return {"message": "Invalid user"}, 403
     user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
     if user_in_a_team:
-        return return_resp(402, "User in a team")
+        return {"message": "User in a team"}, 402
     if "skills" not in user or not user["skills"]:
-        return return_resp(400, "No recommendations found")
+        return {"message":"No recommendations found"}, 400
     if "prizes" not in user or not user["prizes"]:
         prizes = []
     else:
@@ -50,6 +50,6 @@ def get_team_recommendations(email):  # GET
                 names.add(m["_id"])
                 matches.append(m)
     if not matches:
-        return return_resp(400, "No recommendations found")
-    return return_resp(200, matches)
+        return {"message": "No recommendations found"}, 400
+    return {"matches":matches}, 200}
 

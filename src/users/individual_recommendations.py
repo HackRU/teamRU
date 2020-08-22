@@ -1,5 +1,4 @@
 from src.flaskapp.lcs import call_auth_endpoint, get_name
-from src.flaskapp.util import return_resp
 from src.flaskapp.db import coll
 
 
@@ -16,9 +15,9 @@ def get_individual_recommendations(email):  # GET
     """
     team = coll("teams").find_one({"members": {"$all": [email]}})
     if not team:
-        return return_resp(400, "User not in a team")
+        return {"message": "User not in a team"}, 400
     if "partnerskills" not in team or not team["partnerskills"]:
-        return return_resp(401, "Profile not complete")
+        return {"message": "Profile not complete"}, 401
     if "prizes" not in team or not team["prizes"]:
         prizes = []
     else:
@@ -59,5 +58,5 @@ def get_individual_recommendations(email):  # GET
                 m.update({"name": name})
                 matches.append(m)
     if not matches:
-        return return_resp(402, "No recommendations found")
-    return return_resp(200, matches)
+        return {"message": "No recommendations found"}, 402
+    return {"matches": matches}, 200

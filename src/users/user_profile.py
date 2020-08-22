@@ -1,5 +1,5 @@
 from src.flaskapp.lcs import call_auth_endpoint, get_name
-from src.flaskapp.util import return_resp, format_string
+from src.flaskapp.util import format_string
 from src.flaskapp.db import coll
 
 
@@ -16,20 +16,20 @@ def get_user_profile(email):  # GET
     """
     user_profile = coll("users").find_one({"_id": email})
     if not user_profile:
-        return return_resp(200, "User Not found")
+        return {"message": "User Not found"}, 200
     dir_token = call_auth_endpoint()
     if dir_token != 400:
         name = get_name(dir_token, email)
     else:
         name = ""
     user_profile.update({"name": name})
-    return return_resp(200, user_profile)
+    return user_profile, 200
 
 
 def create_user_profile(email, **kwargs):  # POST
     # NOTE Originally skills was required for user to create profile
     # if not data or "skills" not in data or not data["skills"]: required
-    #     return return_resp(400, "Required info not found")
+    #     return {"message": "Required info not found"}, 400
 
     """Creates an user profile
 
@@ -48,7 +48,7 @@ def create_user_profile(email, **kwargs):  # POST
     prizes = kwargs["prizes"] if kwargs["prizes"] else user_exists["prizes"]
     skills = kwargs["skills"] if kwargs["skills"] else user_exists["skills"]
     if user_exists:
-        return return_resp(409, "User already exists")
+        return {"message", "User already exists"}, 401
 
     coll("users").insert_one(
         {
@@ -59,7 +59,7 @@ def create_user_profile(email, **kwargs):  # POST
             "potentialteams": [],
         }
     )
-    return return_resp(201, "Profile created")
+    return {"message": "Profile created"}, 201
 
 
 def update_user_profile(email, **kwargs):  # PUT
@@ -68,7 +68,7 @@ def update_user_profile(email, **kwargs):  # PUT
 
     user_exists = coll("users").find_one({"_id": email})
     if not user_exists:
-        return return_resp(404, "User does not exist")
+        return {"message": "User does not exist"}, 404
 
     coll("users").update({"_id": email}, {"$set": {"skills": skills, "prizes": prizes}})
-    return return_resp(200, "Successful update")
+    return {"message": "Successful update"}, 200

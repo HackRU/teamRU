@@ -4,8 +4,7 @@ from jsonschema import Draft4Validator
 
 import src.flaskapp.config as config
 from src.flaskapp.lcs import call_validate_endpoint
-from src.flaskapp.util import format_string, return_resp
-
+from src.flaskapp.util import format_string
 
 
 def ensure_feature_is_enabled(feature):
@@ -15,9 +14,9 @@ def ensure_feature_is_enabled(feature):
             if config.ENABLE_FEATURE[feature] == 1:
                 return fn()
             elif config.ENABLE_FEATURE[feature] == 0:
-                return return_resp(501, "Feature is disabled")
+                return {"message": "Feature is disabled"}, 501
             else:
-                return return_resp(502, "Wrong Feature value")
+                return {"message": "Wrong Feature value"}, 502
 
         return wrapper
 
@@ -33,7 +32,7 @@ def ensure_json():
             test_input = request.get_json(force=True)
             errors = [error.message for error in validator.iter_errors(test_input)]
             if errors:
-                return return_resp(505, "Invalid Json")
+                return {"message": "Invalid Json"}, 505
             else:
                 return fn()
 
@@ -54,12 +53,12 @@ def ensure_user_logged_in():
             #     or "token" not in data
             #     or not data["token"]
             # ):
-            #     return return_resp(408, "Missing email or token")
+            #     return {"message": "Missing email or token"}, 408
             email = data["user_email"]
             # token = data["token"]
             email = format_string(email)
             if call_validate_endpoint(email, token) != 200:
-                return return_resp(404, "Invalid request")
+                return {"message": "Invalid request"}, 404
             else:
                 return fn()
 

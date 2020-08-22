@@ -15,7 +15,7 @@ from src.teams.add_team_member import add_member
 from src.teams.confirm_member import confirm
 from src.teams.team_complete import mark_team_complete
 
-from src.flaskapp.util import format_string, return_resp
+from src.flaskapp.util import format_string
 from src.flaskapp.schemas import (
     ensure_json,
     ensure_user_logged_in,
@@ -86,7 +86,7 @@ def single_team_interested(user_id):
     email = data["user_email"]
     email = format_string(email)
     if not data or "name" not in data or not data["name"]:
-        return return_resp(401, "Missing inf")
+        return {"message": "Missing inf"},401 
     name = data["name"]
     return user_interested(email, name)
 
@@ -101,7 +101,7 @@ def single_team_interested(user_id):
     email = data["user_email"]
     email = format_string(email)
     if not data or "name" not in data or not data["name"]:
-        return return_resp(401, "Missing inf")
+        return {"message":"Missing inf"}, 401
     name = data["name"]
     return user_interested(email, name)
 
@@ -137,7 +137,7 @@ def teams():
             or not data["skills"]
         ):
             # TODO use return_resp (done)
-            return return_resp(400, "Required info not found")
+            return {"message": "Required info not found"}, 400
         team_name = format_string(data["name"])
         team_desc = format_string(data["desc"])
         skills = format_string(data["skills"])
@@ -161,6 +161,7 @@ def single_team(user_id):
 
     if request.method == "PUT":
         # TODO Update team profile （what can the team update)
+        
 
 @app.route("/teams/<user_id>/complete", methods=["PUT"])
 # @ensure_json()
@@ -174,7 +175,7 @@ def single_team_complete(user_id):
         email = email.strip().lower()
         team = coll("teams").find_one({"members": {"$all": [email]}})
         if not team:
-            return return_resp(401, "User not in a team")
+            return {"message": "User not in a team"}, 401
         return mark_team_complete(team)
 
 # TODO Group admins? They can remove, transfer adminship, etc.
@@ -197,7 +198,7 @@ def confirm_member():
     data = request.get_json(silent=True)
     email = data["user_email"].strip().lower()
     if not data or "email" not in data or not data["email"]:
-        return return_resp(401, "Missing inf")
+        return {"message": "Missing inf"}, 401
     hacker = data["email"].strip().lower()
     return confirm(email, hacker)
 
@@ -210,7 +211,7 @@ def add_team_member():
     data = request.get_json(silent=True)
     email = data["user_email"].strip().lower()
     if not data or "email" not in data or not data["email"]:
-        return return_resp(400, "Required info not found")
+        return {"message":"Required info not found"}, 400
     partner_email = data["email"].strip().lower()
     return add_member(email, partner_email)
 

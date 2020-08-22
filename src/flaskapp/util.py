@@ -38,11 +38,3 @@ def format_string(s):
     #     print(format_string(6))
     #     print(format_string({"TeamRU": 2020}))
 
-
-def return_resp(code, body):
-    """
-    # TODO Add docstring for this function
-    """
-    resp = jsonify(body)
-    resp.status_code = code
-    return resp
