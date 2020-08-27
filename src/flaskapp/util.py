@@ -1,5 +1,4 @@
 """Utility functions that are used throughout the codebase."""
-from flask import jsonify
 
 
 def format_string(s):
