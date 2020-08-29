@@ -8,60 +8,53 @@ from src.flaskapp.util import format_string
 
 
 def ensure_feature_is_enabled(feature):
-    def inner(fn):
-        @wraps(fn)
-        def wrapper():
-            if config.ENABLE_FEATURE[feature] == 1:
-                return fn()
-            elif config.ENABLE_FEATURE[feature] == 0:
+    def inner_decorator(func):
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            if config.ENABLE_FEATURE[feature]:
+                return func(*args, **kwargs)
+            else:
                 return {"message": "Feature is disabled"}, 501
-            else:
-                return {"message": "Wrong Feature value"}, 502
-
-        return wrapper
-
-    return inner
-
-
-def ensure_json():
-    validator = Draft4Validator({"type": "object"})
-
-    def wrapper(fn):
-        @wraps(fn)
-        def wrapped():
-            test_input = request.get_json(force=True)
-            errors = [error.message for error in validator.iter_errors(test_input)]
-            if errors:
-                return {"message": "Invalid Json"}, 505
-            else:
-                return fn()
 
         return wrapped
 
-    return wrapper
+    return inner_decorator
 
 
-def ensure_user_logged_in():
-    def wrapper(fn):
-        @wraps(fn)
-        def wrapped():
-            # data = request.get_json(force=True)
-            # if (
-            #     not data
-            #     or "user_email" not in data
-            #     or not data["user_email"]
-            #     or "token" not in data
-            #     or not data["token"]
-            # ):
-            #     return {"message": "Missing email or token"}, 408
-            email = data["user_email"]
-            # token = data["token"]
-            email = format_string(email)
-            if call_validate_endpoint(email, token) != 200:
-                return {"message": "Invalid request"}, 404
-            else:
-                return fn()
+validator = Draft4Validator({"type": "object"})
+def ensure_json(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        test_input = request.get_json(force=True)
+        errors = [error.message for error in validator.iter_errors(test_input)]
+        if errors:
+            return {"message": "Invalid Json"}, 422
+        else:
+            return func(*args, **kwargs)
 
-        return wrapped
+    return wrapped
 
-    return wrapper
+
+# TODO: Change authentication to stop making LCS requests every time
+# TODO: Handle email and token from path params as well as request body
+def ensure_user_logged_in(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        data = request.get_json(force=True)
+        if (
+            not data
+            or "user_email" not in data
+            or not data["user_email"]
+            or "token" not in data
+            or not data["token"]
+        ):
+            return {"message": "Missing email or token"}, 408
+        email = format_string(data["user_email"])
+        token = data["token"]
+        resp, status_code = call_validate_endpoint(email, token)
+        if status_code != 200:
+            return resp, status_code
+
+        return func(*args, **kwargs)
+
+    return wrapped
