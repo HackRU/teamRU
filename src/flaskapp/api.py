@@ -2,7 +2,12 @@ import base64
 from flask import Flask, request
 
 from src.flaskapp.db import coll
-from src.users.user_profile import get_user_profile, create_user_profile, update_user_profile
+from src.users.user_profile import (
+    get_user_profile,
+    get_user_profiles,
+    create_user_profile,
+    update_user_profile,
+)
 from src.users.individual_recommendations import get_individual_recommendations
 from src.users.team_recommendations import get_team_recommendations
 from src.users.interested import user_interested
@@ -26,7 +31,8 @@ app = Flask(__name__)
 
 ############################## USERS ##############################
 
-@app.route("/users", methods=["GET", "POST"])
+
+@app.route("/users/", methods=["GET", "POST"])
 # @ensure_json()
 # @ensure_user_logged_in()
 # @ensure_feature_is_enabled("user profile")
@@ -35,7 +41,8 @@ def users():
         # TODO Retrieve all users currently in TeamRU
         # Filter response using query parameters
         # Might need to add pagination (limit/offset) for this response
-        return {}, 200 # placeholder
+
+        return get_user_profiles(request.args)
 
     if request.method == "POST":
         # Create a new user
@@ -49,6 +56,7 @@ def users():
         if "skills" in data:
             skills = format_string(data["skills"])
         return create_user_profile(email, prizes=prizes, skills=skills)
+
 
 @app.route("/users/<user_id>", methods=["GET", "PUT"])
 # @ensure_json()
@@ -75,10 +83,11 @@ def single_user(user_id):
             skills = format_string(data["skills"])
         return update_user_profile(email, prizes=prizes, skills=skills)
 
+
 @app.route("/users/<user_id>/invite", methods=["POST"])
-@ensure_json()
-@ensure_user_logged_in()
-@ensure_feature_is_enabled("interested")
+# @ensure_json()
+# @ensure_user_logged_in()
+# @ensure_feature_is_enabled("interested")
 def single_team_interested(user_id):
     # TODO: A user makes a request to join a team
     # TODO: Add team_id or some sort of team identifier
@@ -86,26 +95,31 @@ def single_team_interested(user_id):
     email = data["user_email"]
     email = format_string(email)
     if not data or "name" not in data or not data["name"]:
-        return {"message": "Missing inf"},401 
+        return {"message": "Missing inf"}, 401
     name = data["name"]
     return user_interested(email, name)
 
+
 @app.route("/users/<user_id>/confirm", methods=["POST"])
-@ensure_json()
-@ensure_user_logged_in()
-@ensure_feature_is_enabled("interested")
-def single_team_interested(user_id):
+# @ensure_json()
+# @ensure_user_logged_in()
+# @ensure_feature_is_enabled("interested")
+def confirm_invite(
+    user_id,
+):  # TODO This method has not been implemented yet and the name of the method name can be changed to better suit the action
     # TODO: A user accpets a team's request to join their team
     # TODO: Add team_id or some sort of team identifier
     data = request.get_json(silent=True)
     email = data["user_email"]
     email = format_string(email)
     if not data or "name" not in data or not data["name"]:
-        return {"message":"Missing inf"}, 401
+        return {"message": "Missing inf"}, 401
     name = data["name"]
     return user_interested(email, name)
 
+
 ############################## TEAMS ##############################
+
 
 @app.route("/teams", methods=["GET", "POST"])
 # @ensure_json()
@@ -146,6 +160,7 @@ def teams():
             prizes = format_string(data["prizes"])
         return create_team(team_name, email, team_desc, skills, prizes)
 
+
 @app.route("/teams/<user_id>", methods=["GET", "PUT"])
 # @ensure_json()
 # @ensure_user_logged_in()
@@ -161,7 +176,8 @@ def single_team(user_id):
 
     if request.method == "PUT":
         # TODO Update team profile （what can the team update)
-        
+        pass
+
 
 @app.route("/teams/<user_id>/complete", methods=["PUT"])
 # @ensure_json()
@@ -178,6 +194,7 @@ def single_team_complete(user_id):
             return {"message": "User not in a team"}, 401
         return mark_team_complete(team)
 
+
 # TODO Group admins? They can remove, transfer adminship, etc.
 @app.route("/teams/<user_id>/leave", methods=["POST"])
 # @ensure_json()
@@ -188,6 +205,7 @@ def single_team_leave(user_id):
     email = data["user_email"]
     email = format_string(email)
     return leave(email)
+
 
 @app.route("/teams/<user_id>/confirm", methods=["POST"])
 # @ensure_json()
@@ -202,25 +220,28 @@ def confirm_member():
     hacker = data["email"].strip().lower()
     return confirm(email, hacker)
 
+
 @app.route("/teams/<user_id>/invite", methods=["POST"])
-@ensure_json()
-@ensure_user_logged_in()
-@ensure_feature_is_enabled("add team member")
+# @ensure_json()
+# @ensure_user_logged_in()
+# @ensure_feature_is_enabled("add team member")
 def add_team_member():
     # TODO Someone on the team is inviting another user to the team
     data = request.get_json(silent=True)
     email = data["user_email"].strip().lower()
     if not data or "email" not in data or not data["email"]:
-        return {"message":"Required info not found"}, 400
+        return {"message": "Required info not found"}, 400
     partner_email = data["email"].strip().lower()
     return add_member(email, partner_email)
 
+
 ############################## MATCHES ##############################
 
+
 @app.route("/team-recommendations", methods=["GET"])
-@ensure_json()
-@ensure_user_logged_in()
-@ensure_feature_is_enabled("team recommendations")
+# @ensure_json()
+# @ensure_user_logged_in()
+# @ensure_feature_is_enabled("team recommendations")
 def team_recommendations():
     data = request.get_json(silent=True)
     email = data["user_email"]
@@ -229,9 +250,9 @@ def team_recommendations():
 
 
 @app.route("/individual-recommendations", methods=["GET"])
-@ensure_json()
-@ensure_user_logged_in()
-@ensure_feature_is_enabled("individual recommendations")
+# @ensure_json()
+# @ensure_user_logged_in()
+# @ensure_feature_is_enabled("individual recommendations")
 def individual_recommendations():
     data = request.get_json(silent=True)
     email = data["user_email"]

@@ -26,6 +26,33 @@ def get_user_profile(email):  # GET
     return user_profile, 200
 
 
+def get_user_profiles(args):  # GET
+    """Endpoint to get multiple user profiles at once
+
+    Args (Optional):
+    1. limit - int - number of user profiles to return. Default value = 0 which will return everything
+    2. hasateam - bool - returns user that are in a team or not Default value = none which returns both
+
+    Returns a list of users
+
+    """
+    limit = args.get("limit", type=int) if args.get("limit") else 0
+    hasateam = args.get("hasateam")
+
+    if hasateam:
+        users = list(
+            coll("users")
+            .find({"hasateam": hasateam.lower() == "true"})
+            .limit(
+                limit
+            )  # NOTE checks if the string value of hasateam is equal to "true" because HTTP protocol only passes strings
+        )
+    else:
+        users = list(coll("users").find({}).limit(limit))
+
+    return {"user_profiles": users}, 200
+
+
 def create_user_profile(email, **kwargs):  # POST
     # NOTE Originally skills was required for user to create profile
     # if not data or "skills" not in data or not data["skills"]: required

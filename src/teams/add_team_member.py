@@ -1,7 +1,7 @@
 from flask import request
 
 from src.flaskapp.lcs import call_auth_endpoint, get_name
-from src.flaskapp.util import format_string 
+from src.flaskapp.util import format_string
 from src.flaskapp.db import coll
 from src.flaskapp.schemas import (
     ensure_json,
@@ -24,9 +24,9 @@ def add_member(email, partner_email):  # if request.method == 'POST'
        """
     dir_token = call_auth_endpoint()
     if dir_token == 400:
-        return {"message":  "auth endpoint failed"}, 401
+        return {"message": "auth endpoint failed"}, 401
     if get_name(dir_token, partner_email) == 400:
-        return {"message": }, 402, "Partner doesn't have a hackRU account")
+        return {"message": "Partner doesn't have a hackRU account"}, 402
     team = coll("teams").find_one({"members": {"$all": [email]}})
     if not team:
         return {"message": "User not in a team"}, 405
