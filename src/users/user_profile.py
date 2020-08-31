@@ -84,7 +84,7 @@ def create_user_profile(email, **kwargs):  # POST
 
 
 def update_user_profile(email, **kwargs):  # PUT
-    """Updat user profile
+    """Update user profile
 
     Update a user profile with new parameters.
 
@@ -96,12 +96,10 @@ def update_user_profile(email, **kwargs):  # PUT
     Returns:
         Status of update (dict)
     """
-    prizes = kwargs["prizes"]
-    skills = kwargs["skills"]
 
     user_exists = coll("users").find_one({"_id": email})
     if not user_exists:
         return {"error": "User not found"}, 404
 
-    coll("users").update({"_id": email}, {"$set": {"skills": skills, "prizes": prizes}})
+    coll("users").update_one({"_id": email}, {"$set": kwargs})
     return {"message": "User profile successfully updated"}, 200

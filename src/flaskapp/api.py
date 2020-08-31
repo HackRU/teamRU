@@ -76,8 +76,8 @@ def users():
 def single_user(user_id):
     # Decode base64 encoded string
     # urlsafe_b64decode takes in a binary string, which is why we need to encode/decode (convert to binary/string)
-    email = base64.urlsafe_b64decode(user_id.encode()).decode()
-
+    # email = base64.urlsafe_b64decode(user_id.encode()).decode()
+    email = user_id
     if request.method == "GET":
         # Retrieve a single user
         return get_user_profile(email)
@@ -86,14 +86,12 @@ def single_user(user_id):
         # TODO: Future - Update this method to take in additional parameters
         data = request.get_json(silent=True)
 
-        # Create a new user
-        prizes = []
-        skills = []
-        if "prizes" in data:
-            prizes = format_string(data["prizes"])
-        if "skills" in data:
-            skills = format_string(data["skills"])
-        return update_user_profile(email, prizes=prizes, skills=skills)
+        temp = {
+            name: format_string([data[name]])
+            for name in ["prizes", "skills", "bio", "github"]
+            if data.get(name)
+        }
+        return update_user_profile(email, **temp)
 
 
 @app.route("/users/<user_id>/invite", methods=["POST"])
