@@ -26,8 +26,8 @@ def get_user_profiles(args):  # GET
     """Endpoint to get multiple user profiles at once
 
     Args (Optional):
-    1. limit - int - number of user profiles to return. Default value = 0 which will return everything
-    2. hasateam - bool - returns user that are in a team or not Default value = none which returns both
+    1. limit (int) - number of user profiles to return. Default value = 0 which will return everything
+    2. hasateam (bool) - returns user that are in a team or not Default value = none which returns both
 
     Returns a list of users
 
@@ -52,28 +52,30 @@ def get_user_profiles(args):  # GET
 def create_user_profile(email, **kwargs):  # POST
     """Create user profile
 
-    Creates a new user profile from the user email, skills, and prizes.
+    Creates a new user profile from the user email, skills, prizes, and other fields.
 
     Args:
         1. User's email (str)
-        2. Skills (list of str) - optional
-        3. Prizes (list of str) - optional
+        2. skills (list of str) - optional
+        3. prizes (list of str) - optional
+        4. bio (str) - optional
+        5. github (str) - optional
 
     Returns:
         User profile object (dict)
     """
-    # TODO: Future - Update this method to take in additional parameters (name, bio, etc.)
     user_exists = coll("users").find_one({"_id": email})
-    prizes = kwargs["prizes"] if kwargs["prizes"] else user_exists["prizes"]
-    skills = kwargs["skills"] if kwargs["skills"] else user_exists["skills"]
+
     if user_exists:
         return {"error", "User already exists"}, 400
 
     coll("users").insert_one(
         {
             "_id": email,
-            "skills": skills,
-            "prizes": prizes,
+            "skills": kwargs["skills"],
+            "prizes": kwargs["prizes"],
+            "bio": kwargs["bio"],
+            "github": kwargs["github"],
             "hasateam": False,
             "potentialteams": [],
         }

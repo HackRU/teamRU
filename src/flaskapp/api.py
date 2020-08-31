@@ -51,11 +51,22 @@ def users():
 
         prizes = []
         skills = []
+        bio = ""
+        github = ""
+
         if "prizes" in data:
             prizes = format_string(data["prizes"])
         if "skills" in data:
             skills = format_string(data["skills"])
-        return create_user_profile(email, prizes=prizes, skills=skills)
+        if "bio" in data:
+            bio = format_string(data["bio"])
+        if "github" in data:
+            # NOTE can ping github api to verify this is an actual acct.
+            github = format_string(data["github"])
+
+        return create_user_profile(
+            email, prizes=prizes, skills=skills, bio=bio, github=github
+        )
 
 
 @app.route("/users/<user_id>", methods=["GET", "PUT"])
@@ -173,6 +184,7 @@ def single_team(user_id):
     if request.method == "PUT":
         # TODO: Daniel - Update team profile (similar to update user profile)
         pass
+
 
 @app.route("/teams/<user_id>/complete", methods=["PUT"])
 # @ensure_json
