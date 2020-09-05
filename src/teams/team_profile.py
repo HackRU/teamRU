@@ -7,17 +7,22 @@ from src.flaskapp.schemas import (
 )
 
 
-def get_team_profile(team):  # GET
+def get_team_profile(email):  # GET
     """get team information
 
        returns team information as text in json
 
        Args:
-           team: team object
+           email: email of a team member
 
        Return:
             Jsonified team info
        """
+    email = email.strip().lower()
+    team = coll("teams").find_one({"members": {"$all": [email]}})
+    if not team:
+        return {"message": "User not in a team"}, 401
+
     members = team["members"]
     members_names = []
     for member in members:
@@ -30,3 +35,48 @@ def get_team_profile(team):  # GET
         members_names.append(name)
         team.update({"names": members_names})
     return {"team": team}, 200
+
+
+# TODO should user have ability to change team name?
+def update_team_profile(email, **kwargs):  # PUT
+    """update team information
+
+          returns team information as text in json, accept kwargs: desc,partnerskills,prizes,interested
+
+          Args:
+              email: email of a team member
+
+          Return:
+               response object(401:User not in a team, 200: Success)
+          """
+    email = email.strip().lower()
+    team = coll("teams").find_one({"members": {"$all": [email]}})
+    if not team:
+        return {"message": "User not in a team"}, 401
+
+    team_name = team["_id"]
+    desc = team["desc"]
+    partnerskills = team["partnerskills"]
+    prizes = team["prizes"]
+    interested = team["interested"]
+
+    # team_name = kwargs["id_"]
+    if "desc" in kwargs.keys():
+        desc = kwargs["desc"]
+    if "partnerskills" in kwargs.keys():
+        partnerskills = kwargs["partnerskills"]
+    if "prizes" in kwargs.keys():
+        prizes = kwargs["prizes"]
+    if "interested" in kwargs.keys():
+        interested = kwargs["interested"]
+
+    coll("teams").update({"_id": team_name}, {
+        "$set": {
+            "desc": desc,
+            "partnerskills": partnerskills,
+            "prizes": prizes,
+            "interested": interested
+        }
+    })
+
+    return {"message": "Successful update"}, 200

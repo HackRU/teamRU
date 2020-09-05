@@ -9,7 +9,7 @@ from src.flaskapp.schemas import (
 )
 
 
-def mark_team_complete(team):
+def mark_team_complete(email):
     """reverse team completion status
 
        change team completion status:
@@ -17,12 +17,16 @@ def mark_team_complete(team):
         if it was complete, mark it incomplete.
 
        Args:
-           team:team object
+           email: email of any team member
 
        Return:
             response object
        """
-    # TODO: Check size of team before allowing user actions (if team size is 4, don't let them mark open) (done)
+    email = email.strip().lower()
+    team = coll("teams").find_one({"members": {"$all": [email]}})
+    if not team:
+        return {"message": "User not in a team"}, 401
+
     team_name = team["_id"]
     team_complete = team["complete"]
     team_size = len(team["members"])

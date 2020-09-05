@@ -26,7 +26,7 @@ def add_member(email, partner_email):  # if request.method == 'POST'
     if dir_token == 400:
         return {"message":  "auth endpoint failed"}, 401
     if get_name(dir_token, partner_email) == 400:
-        return {"message": }, 402, "Partner doesn't have a hackRU account")
+        return {"message": "Partner doesn't have a hackRU account"}, 402
     team = coll("teams").find_one({"members": {"$all": [email]}})
     if not team:
         return {"message": "User not in a team"}, 405
