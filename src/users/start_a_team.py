@@ -45,7 +45,8 @@ def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
                     "partnerskills": formatted_skills,
                     "prizes": formatted_prizes,
                     "complete": False,
-                    "interested": [],
+                    "incoming_inv": [],
+                    "outgoing_inv": [],
                 }
             )
             return {"message": "Success"}, 200

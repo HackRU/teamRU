@@ -1,7 +1,7 @@
 from src.flaskapp.db import coll
 
 
-def leave(email):  # POST
+def user_leave(email):  # POST
     """the user leaves a team
 
     Removes the individual from the team

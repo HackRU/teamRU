@@ -89,10 +89,12 @@ def update_user_profile(email, **kwargs):  # PUT
     Update a user profile with new parameters.
 
     Args:
-        1. User's email (str)
-        2. Skills (list of str) - optional
-        3. Prizes (list of str) - optional
-
+        1. user's email (str)
+        2. skills (list of str) - optional
+        3. prizes (list of str) - optional
+        4. bio (str) - optional
+        5. github (str) - optional
+        
     Returns:
         Status of update (dict)
     """

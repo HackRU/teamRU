@@ -9,7 +9,7 @@ from src.flaskapp.schemas import (
 )
 
 
-def mark_team_complete(team):
+def team_complete(team):
     """reverse team completion status
 
        change team completion status:
