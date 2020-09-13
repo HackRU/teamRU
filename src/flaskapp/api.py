@@ -1,7 +1,11 @@
 import base64
 from flask import Flask, request
 
-from src.flaskapp.db import coll
+from src.users.user_profile import (
+    get_user_profile,
+    create_user_profile,
+    update_user_profile,
+)
 from src.users.user_profile import (
     get_user_profile,
     get_user_profiles,
@@ -11,7 +15,7 @@ from src.users.user_profile import (
 from src.matching.individual_recommendations import get_individual_recommendations
 from src.matching.team_recommendations import get_team_recommendations
 
-from src.teams.team_profile import get_team_profile
+from src.teams.team_profile import get_team_profile, update_team_profile
 from src.teams.open_teams import return_open_teams
 from src.teams.team_complete import team_complete
 
@@ -141,12 +145,11 @@ def single_user(user_id):
 def teams():
     if request.method == "GET":
         # Previously /open-teams
-        # TODO Convert this code to accept filters from query params
-        data = request.get_json(silent=True)
-        if "filter" not in data or not data["filter"]:
-            search = None
+        args = request.args
+        if "filter" in args:
+            search = args["filter"]
         else:
-            search = data["filter"]
+            search = None
         return return_open_teams(search)
 
     if request.method == "POST":
@@ -184,8 +187,7 @@ def single_team(user_id):
         return get_team_profile(email)
 
     if request.method == "PUT":
-        # TODO: Daniel - Update team profile (similar to update user profile)
-        pass
+        return update_team_profile(email,)
 
 
 @app.route("/teams/<user_id>/complete", methods=["PUT"])
