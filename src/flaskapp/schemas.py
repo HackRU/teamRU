@@ -1,3 +1,4 @@
+import jwt
 from flask import request
 from functools import wraps
 from jsonschema import Draft4Validator
@@ -35,26 +36,24 @@ def ensure_json(func):
     return wrapped
 
 
-# TODO: Change authentication to stop making LCS requests every time
-# TODO: Handle email and token from path params as well as request body
+# TODO: Change authentication to stop making LCS requests every time (long term goal)
 def ensure_user_logged_in(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
-        data = request.get_json(force=True)
-        if (
-            not data
-            or "user_email" not in data
-            or not data["user_email"]
-            or "token" not in data
-            or not data["token"]
-        ):
-            return {"message": "Missing email or token"}, 408
-        email = format_string(data["user_email"])
-        token = data["token"]
-        resp, status_code = call_validate_endpoint(email, token)
+        resp, status_code = call_validate_endpoint(token)
         if status_code != 200:
             return resp, status_code
 
-        return func(*args, **kwargs)
+        token = request.headers.get("token")
+        if not token:
+            return {"message": "Missing email or token"}, 401
+        try:
+            decoded_payload = jwt.decode(token, verify=False)
+        except jwt.exceptions.InvalidTokenError as err:
+            return {"message": "Failed to decode JWT"}, 400
+
+        email = decoded_payload["email"]
+
+        return func(email, *args, **kwargs)
 
     return wrapped

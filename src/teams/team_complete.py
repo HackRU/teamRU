@@ -1,5 +1,3 @@
-from flask import request
-
 from src.flaskapp.util import format_string
 from src.flaskapp.db import coll
 from src.flaskapp.schemas import (
@@ -9,7 +7,7 @@ from src.flaskapp.schemas import (
 )
 
 
-def team_complete(team):
+def team_complete(email, team_id):
     """reverse team completion status
 
        change team completion status:
@@ -28,6 +26,9 @@ def team_complete(team):
         return {"message": "User not in a team"}, 401
 
     team_name = team["_id"]
+    if team_name != team_id:
+        return {"message": f"User not team {team_id}"}, 403
+
     team_complete = team["complete"]
     team_size = len(team["members"])
     if team_complete is True and team_size <= 4:

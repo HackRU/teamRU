@@ -67,7 +67,7 @@ def create_user_profile(email, **kwargs):  # POST
     user_exists = coll("users").find_one({"_id": email})
 
     if user_exists:
-        return {"error", "User already exists"}, 400
+        return {"error": "User already exists"}, 400
 
     coll("users").insert_one(
         {

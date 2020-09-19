@@ -30,7 +30,7 @@ def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
     if not user_exists:
         return {"message": "Invalid user"}, 403
     if team_exist:
-        return {"message": "Invalid name"}, 401
+        return {"message": "Team name already exists"}, 401
     else:
         user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
         if user_in_a_team:
@@ -49,4 +49,4 @@ def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
                     "outgoing_inv": [],
                 }
             )
-            return {"message": "Success"}, 200
+            return {"message": "Team profile successfully created"}, 201

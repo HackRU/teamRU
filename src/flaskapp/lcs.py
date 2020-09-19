@@ -2,8 +2,8 @@ import requests
 
 import src.flaskapp.config as config
 
-def call_validate_endpoint(email, token):
-    payload = {"email": email, "token": token}
+def call_validate_endpoint(token):
+    payload = {"token": token}
     resp = requests.post(f"{config.LCS_BASE_URL}/validate", json=payload)
     resp_parsed = resp.json()
     if resp_parsed["statusCode"] != 200:

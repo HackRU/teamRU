@@ -15,9 +15,12 @@ def team_reject(team1_name, team2_name):  # POST
     """
     team1 = coll("teams").find_one({"_id": team1_name})
     team2 = coll("teams").find_one({"_id": team2_name})
+
     if not team1 or not team2:
         return {"message": "Invalid name"}, 402
     # FIXME Don't know if this is going to be an issue but this doesn't return an error if the endpoint is rejecting an invite that doesn't exist.
+    if email not in team1["members"]:
+        return {"message": f"User not in team {team1_name}"}, 403
     coll("teams").update_one(
         {"_id": team1_name}, {"$pull": {"incoming_inv": team2_name}}
     )

@@ -1,7 +1,7 @@
 from src.flaskapp.db import coll
 
 
-def user_leave(email):  # POST
+def user_leave(email, team_id):  # POST
     """the user leaves a team
 
     Removes the individual from the team
@@ -14,8 +14,11 @@ def user_leave(email):  # POST
     """
     user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
     if not user_in_a_team:
-        return {"message": "User doesn't have a tram"}, 400
+        return {"message": "User doesn't have a team"}, 400
     team_name = coll("teams").find_one({"members": {"$all": [email]}}, {"_id"})["_id"]
+    if team_name != team_id:
+        return {"message": f"User not team {team_id}"}, 403
+
     team_size = len(coll("teams").find_one({"_id": team_name})["members"])
     if team_size == 1:
         coll("teams").delete_one({"_id": team_name})
