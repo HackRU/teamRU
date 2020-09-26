@@ -80,6 +80,3 @@ def get_team_recommendations(email):  # GET
     if not matches:
         return {"message": "No recommendations found"}, 400
     return {"matches": matches}, 200
-
-
-def skills_matching(skill):
