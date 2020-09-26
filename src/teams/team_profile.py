@@ -7,7 +7,7 @@ from src.flaskapp.schemas import (
 )
 
 
-def get_team_profile(email):  # GET
+def get_team_profile(email, team_id):  # GET
     """get team information
 
        returns team information as text in json
@@ -22,6 +22,10 @@ def get_team_profile(email):  # GET
     team = coll("teams").find_one({"members": {"$all": [email]}})
     if not team:
         return {"message": "User not in a team"}, 401
+
+    team_name = team["_id"]
+    if team_name != team_id:
+        return {"message": f"User not team {team_id}"}, 403
 
     members = team["members"]
     members_names = []
@@ -38,7 +42,7 @@ def get_team_profile(email):  # GET
 
 
 # TODO should user have ability to change team name?
-def update_team_profile(email, **kwargs):  # PUT
+def update_team_profile(email, team_id, **kwargs):  # PUT
     """update team information
 
           returns team information as text in json, accept kwargs: desc, skills, prizes, interested
@@ -55,6 +59,9 @@ def update_team_profile(email, **kwargs):  # PUT
         return {"message": "User not in a team"}, 401
 
     team_name = team["_id"]
+    if team_name != team_id:
+        return {"message": f"User not team {team_id}"}, 403
+
     desc = team["desc"]
     skills = team["skills"]
     prizes = team["prizes"]
@@ -82,4 +89,4 @@ def update_team_profile(email, **kwargs):  # PUT
         },
     )
 
-    return {"message": "Successful update"}, 200
+    return {"message": "Team profile successfully updated"}, 200

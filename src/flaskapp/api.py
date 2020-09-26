@@ -3,30 +3,22 @@ from flask import Flask, request
 
 from src.users.user_profile import (
     get_user_profile,
-    create_user_profile,
-    update_user_profile,
-)
-from src.users.user_profile import (
-    get_user_profile,
     get_user_profiles,
     create_user_profile,
     update_user_profile,
 )
 from src.matching.team_recommendations import get_team_recommendations
+from src.users.user_leave import user_leave
+from src.users.start_a_team import create_team
 
 from src.teams.team_profile import get_team_profile, update_team_profile
 from src.teams.open_teams import return_open_teams
 from src.teams.team_complete import team_complete
 
-# from src.teams.add_team_member import add_member
-
 from src.teams.unify.team_invite import team_invite
 from src.teams.unify.team_confirm import team_confirm
 from src.teams.unify.team_rescind import team_rescind
 from src.teams.unify.team_reject import team_reject
-
-from src.users.user_leave import user_leave
-from src.users.start_a_team import create_team
 
 
 from src.flaskapp.util import format_string
@@ -45,7 +37,9 @@ app = Flask(__name__)
 # @ensure_json
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("user profile")
-def users():
+def users(email):
+    email = None  # unused
+
     if request.method == "GET":
         # Filter response using query parameters
         # Might need to add pagination (limit/offset) for this response
@@ -90,15 +84,15 @@ def users():
         )
 
 
-@app.route("/users/<user_id>", methods=["GET", "PUT"])
+@app.route("/users/profile", methods=["GET", "PUT"])
 # @ensure_json
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("user profile")
-def single_user(user_id):
+def single_user(email):
     # Decode base64 encoded string
     # urlsafe_b64decode takes in a binary string, which is why we need to encode/decode (convert to binary/string)
     # email = base64.urlsafe_b64decode(user_id.encode()).decode()
-    email = user_id
+    # email = user_id
     if request.method == "GET":
         # Retrieve a single user
         return get_user_profile(email)
@@ -121,14 +115,14 @@ def single_user(user_id):
 # @ensure_json
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("start a team")
-def teams():
+def teams(email):
+    email = None  # unused
+
     if request.method == "GET":
-        # Previously /open-teams
         args = request.args
+        search = None
         if "filter" in args:
             search = args["filter"]
-        else:
-            search = None
         return return_open_teams(search)
 
     if request.method == "POST":
@@ -155,54 +149,56 @@ def teams():
         return create_team(team_name, email, team_desc, skills, prizes)
 
 
-@app.route("/teams/<user_id>", methods=["GET", "PUT"])
+@app.route("/teams/<team_id>", methods=["GET", "PUT"])
 # @ensure_json
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("start a team")
-def single_team(user_id):
-    email = base64.urlsafe_b64decode(user_id.encode()).decode()
+def single_team(email, team_id):
+    # email = base64.urlsafe_b64decode(user_id.encode()).decode()
 
     if request.method == "GET":
-        return get_team_profile(email)
+        return get_team_profile(email, team_id)
 
     if request.method == "PUT":
-        return update_team_profile(email,)
+        return update_team_profile(email, team_id)
 
 
-@app.route("/teams/<user_id>/complete", methods=["PUT"])
+@app.route("/teams/<team_id>/complete", methods=["PUT"])
 # @ensure_json
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("team complete")
-def mark_team_complete(user_id):
+def mark_team_complete(email, team_id):
     if request.method == "PUT":
         # Previously /team-complete
-        data = request.get_json(silent=True)
-        email = data["user_email"]
-        email = email.strip().lower()
-        team = coll("teams").find_one({"members": {"$all": [email]}})
-        if not team:
-            return {"message": "User not in a team"}, 401
-        return team_complete(team)
+        # data = request.get_json(silent=True)
+        # email = data["user_email"]
+        # email = email.strip().lower()
+        # team = coll("teams").find_one({"members": {"$all": [email]}})
+        # if not team:
+        #     return {"message": "User not in a team"}, 401
+        return team_complete(email, team_id)
 
 
 # TODO Group admins? They can remove, transfer adminship, etc.
-@app.route("/teams/<user_id>/leave", methods=["POST"])
+@app.route("/teams/<team_id>/leave", methods=["POST"])
 # @ensure_json
-# @ensure_user_logged_in
+@ensure_user_logged_in
 # @ensure_feature_is_enabled("leave team")
-def leave(user_id):
-    data = request.get_json(silent=True)
-    email = data["user_email"]
-    email = format_string(email)
-    return user_leave(email)
+def leave(email, team_id):
+    # data = request.get_json(silent=True)
+    # email = data["user_email"]
+    # email = format_string(email)
+    return user_leave(email, team_id)
 
 
 ############################## UNIFY ##############################
+
+
 @app.route("/teams/<team_id>/invite", methods=["POST"])
 # @ensure_json
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("add team member")
-def invite(team_id):
+def invite(email, team_id):
     # NOTE team1 -inviting-> team2 (invite another team)
     team1_name = team_id
     # team1_name = base64.urlsafe_b64decode(team_id.encode()).decode()
@@ -210,14 +206,14 @@ def invite(team_id):
     if not data or "name" not in data or not data["name"]:
         return {"message": "Required info not found"}, 400
     team2_name = format_string(data["name"])
-    return team_invite(team1_name, team2_name)
+    return team_invite(email, team1_name, team2_name)
 
 
 @app.route("/teams/<team_id>/confirm", methods=["POST"])
 # @ensure_json
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("confirm member")
-def confirm(team_id):
+def confirm(email, team_id):
     # NOTE team1 -confirms-> team2 (confirm an invite)
     team1_name = team_id
     # team1_name = base64.urlsafe_b64decode(team_id.encode()).decode()
@@ -225,11 +221,11 @@ def confirm(team_id):
     if not data or "name" not in data or not data["name"]:
         return {"message": "Required info not found"}, 400
     team2_name = format_string(data["name"])
-    return team_confirm(team1_name, team2_name)
+    return team_confirm(email, team1_name, team2_name)
 
 
 @app.route("/teams/<team_id>/rescind", methods=["POST"])
-def rescind(team_id):
+def rescind(email, team_id):
     # NOTE team1 -rescind-> team2 (rescind an invite)
     team1_name = team_id
     # team1_name = base64.urlsafe_b64decode(team_id.enconde()).decode()
@@ -237,11 +233,11 @@ def rescind(team_id):
     if not data or "name" not in data or not data["name"]:
         return {"message": "Required info not found"}, 400
     team2_name = format_string(data["name"])
-    return team_rescind(team1_name, team2_name)
+    return team_rescind(email, team1_name, team2_name)
 
 
 @app.route("/teams/<team_id>/reject", methods=["POST"])
-def reject(team_id):
+def reject(email, team_id):
     # NOTE team1 -reject-> team2 (rejecting an invite)
     team1_name = team_id
     # team1_name = base64.urlsafe_b64decode(team_id.enconde()).decode()
@@ -249,19 +245,18 @@ def reject(team_id):
     if not data or "name" not in data or not data["name"]:
         return {"message": "Required info not found"}, 400
     team2_name = format_string(data["name"])
-    return team_reject(team1_name, team2_name)
+    return team_reject(email, team1_name, team2_name)
 
 
 ############################## MATCHES ##############################
 
 
-@app.route("/team-recommendations", methods=["GET"])
+@app.route("/matches/<team_id>", methods=["GET"])
 # @ensure_json
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("team recommendations")
-def team_recommendations():
-    data = request.get_json(silent=True)
-    email = data["user_email"]
-    email = format_string(email)
-    return get_team_recommendations(email)
-
+def team_recommendations(email, team_id):
+    # data = request.get_json(silent=True)
+    # email = data["user_email"]
+    # email = format_string(email)
+    return get_team_recommendations(email, team_id)

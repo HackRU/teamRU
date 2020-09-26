@@ -18,6 +18,8 @@ def team_rescind(team1_name, team2_name):  # POST
     if not team1 or not team2:
         return {"message": "Invalid name"}, 402
     # FIXME Don't know if this is going to be an issue but this doesn't return an error if the endpoint is rejecting an invite that doesn't exist.
+    if email not in team1["members"]:
+        return {"message": f"User not in team {team1_name}"}, 403
     coll("teams").update_one(
         {"_id": team1_name}, {"$pull": {"outgoing_inv": team2_name}}
     )

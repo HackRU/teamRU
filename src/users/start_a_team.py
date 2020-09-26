@@ -32,7 +32,7 @@ def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
     if not user:
         return {"message": "Invalid user"}, 403
     if team_exist:
-        return {"message": "Invalid name"}, 401
+        return {"message": "Team name already exists"}, 401
     else:
         if user["hasateam"]:
             return {"message": "User in a team"}, 402
@@ -56,4 +56,4 @@ def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
                     # },  # these are the fields that are aggregated internally
                 }
             )
-            return {"message": "Success"}, 200
+            return {"message": "Team profile successfully created"}, 201
