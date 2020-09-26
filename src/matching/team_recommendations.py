@@ -10,7 +10,7 @@ def get_team_recommendations(email):  # GET
         email: the email of the individual that wants recommendations of teams to join
 
     Return:
-        a list of recommmended teams to join
+        a list of recommended teams to join
 
     """
     user = coll("users").find_one({"_id": email})
@@ -25,19 +25,47 @@ def get_team_recommendations(email):  # GET
         prizes = []
     else:
         prizes = user["prizes"]
-    skills = user["skills"]
-    names = set()
+        skills = user["skills"]
+        names = set()
+
     matches = []
     for skill in skills:
-        match = coll("teams").aggregate(
+        complementary_skills_match = coll("teams").aggregate(
             [{"$match": {"complete": False, "partnerskills": {"$all": [skill]}}}]
         )
-        if not match:
+        interests_match = coll("teams").aggregate(
+            [{"$match": {"complete": False, "interested": {"$all": [skill]}}}]
+        )
+
+        if not complementary_skills_match or interests_match:
             continue
-        for m in match:
-            if m["_id"] not in names:
-                names.add(m["_id"])
-                matches.append(m)
+        for this_interest in interests_match:
+            if this_interest["_id"] not in names:
+                names.add(this_interest["_id"])
+                matches.append(this_interest)
+
+
+        frontend_languages = ["HTML", "CSS", "JavaScript"]
+        backend_languages = ["Java", "PHP", "Ruby", "Python", "c", "c++"]
+
+
+        front_or_back = "none"
+        for original_skill in complementary_skills_match:
+            if original_skill in frontend_languages:
+                front_or_back = "front"
+            if original_skill in backend_languages:
+                front_or_back = "back"
+
+        if front_or_back == "front":
+            complementary_skills_match.append( frontend_languages )
+        if front_or_back == "back":
+            complementary_skills_match.append(backend_languages)
+
+        for this_skill in complementary_skills_match:
+            if this_skill["_id"] not in names:
+                names.add(this_interest["_id"])
+                matches.append(this_interest)
+
     for prize in prizes:
         match = coll("teams").aggregate(
             [{"$match": {"complete": False, "prizes": {"$all": [prize]}}}]
@@ -48,7 +76,10 @@ def get_team_recommendations(email):  # GET
             if m["_id"] not in names:
                 names.add(m["_id"])
                 matches.append(m)
+
     if not matches:
         return {"message": "No recommendations found"}, 400
     return {"matches": matches}, 200
 
+
+def skills_matching(skill):
