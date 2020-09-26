@@ -12,7 +12,6 @@ from src.users.user_profile import (
     create_user_profile,
     update_user_profile,
 )
-from src.matching.individual_recommendations import get_individual_recommendations
 from src.matching.team_recommendations import get_team_recommendations
 
 from src.teams.team_profile import get_team_profile, update_team_profile
@@ -59,21 +58,35 @@ def users():
 
         prizes = []
         skills = []
+        interests = []
         bio = ""
         github = ""
+        seriousness = -1  # -1 if users doesn't have one
 
         if "prizes" in data:
             prizes = format_string(data["prizes"])
         if "skills" in data:
             skills = format_string(data["skills"])
+        if "interests" in data:
+            interests = format_string(data["interests"])
         if "bio" in data:
             bio = format_string(data["bio"])
         if "github" in data:
             # NOTE can ping github api to verify this is an actual acct.
             github = format_string(data["github"])
-
+        if "seriousness" in data:
+            try:
+                seriousness = int(data["seriousness"])
+            except:
+                seriousness = -1
         return create_user_profile(
-            email, prizes=prizes, skills=skills, bio=bio, github=github
+            email,
+            prizes=prizes,
+            skills=skills,
+            bio=bio,
+            github=github,
+            interests=interests,
+            seriousness=seriousness,
         )
 
 
@@ -99,40 +112,6 @@ def single_user(user_id):
             if data.get(name)
         }
         return update_user_profile(email, **temp)
-
-
-# # NOTE Removed
-# @app.route("/users/<user_id>/invite", methods=["POST"])
-# # @ensure_json
-# # @ensure_user_logged_in
-# # @ensure_feature_is_enabled("interested")
-# def single_team_interested(user_id):
-#     # TODO: A user makes a request to join a team
-#     # TODO: Add team_id or some sort of team identifier
-#     data = request.get_json(silent=True)
-#     email = data["user_email"]
-#     email = format_string(email)
-#     if not data or "name" not in data or not data["name"]:
-#         return {"message": "Missing inf"}, 401
-#     name = data["name"]
-#     return user_interested(email, name)
-
-# # NOTE Removed
-# @app.route("/users/<user_id>/confirm", methods=["POST"]) #Post
-# # @ensure_json
-# # @ensure_user_logged_in
-# # @ensure_feature_is_enabled("interested")
-# def confirm_invite(user_id):
-#     # TODO This method has not been implemented yet and the name of the method name can be changed to better suit the action
-#     # TODO: A user accpets a team's request to join their team
-#     # TODO: Add team_id or some sort of team identifier
-#     data = request.get_json(silent=True)
-#     email = data["user_email"]
-#     email = format_string(email)
-#     if not data or "name" not in data or not data["name"]:
-#         return {"message": "Missing inf"}, 401
-#     name = data["name"]
-#     return user_interested(email, name)
 
 
 ############################## TEAMS ##############################
@@ -218,7 +197,7 @@ def leave(user_id):
     return user_leave(email)
 
 
-############################## UNITY ##############################
+############################## UNIFY ##############################
 @app.route("/teams/<team_id>/invite", methods=["POST"])
 # @ensure_json
 # @ensure_user_logged_in
@@ -286,13 +265,3 @@ def team_recommendations():
     email = format_string(email)
     return get_team_recommendations(email)
 
-
-@app.route("/individual-recommendations", methods=["GET"])
-# @ensure_json
-# @ensure_user_logged_in
-# @ensure_feature_is_enabled("individual recommendations")
-def individual_recommendations():
-    data = request.get_json(silent=True)
-    email = data["user_email"]
-    email = format_string(email)
-    return get_individual_recommendations(email)

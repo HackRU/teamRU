@@ -8,6 +8,8 @@ from src.flaskapp.schemas import (
     ensure_feature_is_enabled,
 )
 
+from src.flaskapp.util import aggregate_team_meta
+
 
 def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes):
     """initialize team
@@ -25,15 +27,14 @@ def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
             response object(403:Invalid user, 401:Invalid name, 402:User In a team, 200: Success)
        """
     team_exist = coll("teams").find_one({"_id": str(team_name)})
-    user_exists = coll("users").find_one({"_id": email})
+    user = coll("users").find_one({"_id": email})
 
-    if not user_exists:
+    if not user:
         return {"message": "Invalid user"}, 403
     if team_exist:
         return {"message": "Invalid name"}, 401
     else:
-        user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
-        if user_in_a_team:
+        if user["hasateam"]:
             return {"message": "User in a team"}, 402
         else:
             coll("users").update_one({"_id": email}, {"$set": {"hasateam": True}})
@@ -42,11 +43,17 @@ def create_team(team_name, email, team_desc, formatted_skills, formatted_prizes)
                     "_id": team_name,
                     "members": [email],
                     "desc": team_desc,
-                    "partnerskills": formatted_skills,
+                    "skills": formatted_skills,
                     "prizes": formatted_prizes,
                     "complete": False,
                     "incoming_inv": [],
                     "outgoing_inv": [],
+                    "meta": aggregate_team_meta([email])
+                    # {
+                    # "skills": user["skills"],
+                    # "prizes": user["prizes"],
+                    # "interests": user["interests"],
+                    # },  # these are the fields that are aggregated internally
                 }
             )
             return {"message": "Success"}, 200

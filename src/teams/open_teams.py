@@ -35,7 +35,7 @@ def return_open_teams(search):
                 "complete": False,
                 "$or": [
                     {"desc": {"$regex": ".*" + search + ".*"}},
-                    {"partnerskills": {"$regex": ".*" + search + ".*"}},
+                    {"skills": {"$regex": ".*" + search + ".*"}},
                     {"prizes": {"$regex": ".*" + search + ".*"}},
                 ],
             }

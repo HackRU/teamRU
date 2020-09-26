@@ -30,7 +30,7 @@ def get_team_recommendations(email):  # GET
     matches = []
     for skill in skills:
         match = coll("teams").aggregate(
-            [{"$match": {"complete": False, "partnerskills": {"$all": [skill]}}}]
+            [{"$match": {"complete": False, "skills": {"$all": [skill]}}}]
         )
         if not match:
             continue

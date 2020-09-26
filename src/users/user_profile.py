@@ -60,6 +60,9 @@ def create_user_profile(email, **kwargs):  # POST
         3. prizes (list of str) - optional
         4. bio (str) - optional
         5. github (str) - optional
+        6. interests (list of str) - optional (AR/VR, BlockChain, Communications, CyberSecurity, DevOps, Fintech, Gaming, Healthcare, IoT, LifeHacks, ML/AI, Music, Productivity, Social Good, Voice Skills)
+        7. seriousness (enum {i.e. int - 1,2, or 3}) - optional
+        
 
     Returns:
         User profile object (dict)
@@ -73,11 +76,14 @@ def create_user_profile(email, **kwargs):  # POST
         {
             "_id": email,
             "skills": kwargs["skills"],
-            "prizes": kwargs["prizes"],
+            "prizes": kwargs[
+                "prizes"
+            ],  # NOTE Doesn't make sense for a person to have prizes only a team should have this
             "bio": kwargs["bio"],
             "github": kwargs["github"],
+            "interests": kwargs["interests"],
+            "seriousness": kwargs["seriousness"],
             "hasateam": False,
-            "potentialteams": [],
         }
     )
     return {"message": "User profile successfully created"}, 201
