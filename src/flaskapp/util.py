@@ -1,3 +1,6 @@
+from src.flaskapp.db import coll
+from itertools import chain
+
 """Utility functions that are used throughout the codebase."""
 
 
@@ -36,4 +39,18 @@ def format_string(s):
     #     print(format_string(["  JaS on   C  ", "CHE", 6]))
     #     print(format_string(6))
     #     print(format_string({"TeamRU": 2020}))
+
+
+def aggregate_team_meta(members):
+    team_members = coll("users").find({"_id": {"$in": members}})
+    skills, prizes, interests = set(), set(), set()
+    for member in team_members:
+        skills.update(member["skills"])
+        prizes.update(member["prizes"])
+        interests.update(member["interests"])
+    return {
+        "skills": list(skills),
+        "prizes": list(prizes),
+        "interests": list(interests),
+    }
 

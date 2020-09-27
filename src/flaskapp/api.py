@@ -7,6 +7,7 @@ from src.users.user_profile import (
     create_user_profile,
     update_user_profile,
 )
+from src.matching.team_recommendations import get_team_recommendations
 from src.users.user_leave import user_leave
 from src.users.start_a_team import create_team
 
@@ -19,8 +20,6 @@ from src.teams.unify.team_confirm import team_confirm
 from src.teams.unify.team_rescind import team_rescind
 from src.teams.unify.team_reject import team_reject
 
-from src.matching.individual_recommendations import get_individual_recommendations
-from src.matching.team_recommendations import get_team_recommendations
 
 from src.flaskapp.util import format_string
 from src.flaskapp.schemas import (
@@ -39,7 +38,7 @@ app = Flask(__name__)
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("user profile")
 def users(email):
-    email = None # unused
+    email = None  # unused
 
     if request.method == "GET":
         # Filter response using query parameters
@@ -53,21 +52,35 @@ def users(email):
 
         prizes = []
         skills = []
+        interests = []
         bio = ""
         github = ""
+        seriousness = -1  # -1 if users doesn't have one
 
         if "prizes" in data:
             prizes = format_string(data["prizes"])
         if "skills" in data:
             skills = format_string(data["skills"])
+        if "interests" in data:
+            interests = format_string(data["interests"])
         if "bio" in data:
             bio = format_string(data["bio"])
         if "github" in data:
             # NOTE can ping github api to verify this is an actual acct.
             github = format_string(data["github"])
-
+        if "seriousness" in data:
+            try:
+                seriousness = int(data["seriousness"])
+            except:
+                seriousness = -1
         return create_user_profile(
-            email, prizes=prizes, skills=skills, bio=bio, github=github
+            email,
+            prizes=prizes,
+            skills=skills,
+            bio=bio,
+            github=github,
+            interests=interests,
+            seriousness=seriousness,
         )
 
 
@@ -103,7 +116,7 @@ def single_user(email):
 # @ensure_user_logged_in
 # @ensure_feature_is_enabled("start a team")
 def teams(email):
-    email = None # unused
+    email = None  # unused
 
     if request.method == "GET":
         args = request.args
@@ -169,7 +182,7 @@ def mark_team_complete(email, team_id):
 # TODO Group admins? They can remove, transfer adminship, etc.
 @app.route("/teams/<team_id>/leave", methods=["POST"])
 # @ensure_json
-# @ensure_user_logged_in
+@ensure_user_logged_in
 # @ensure_feature_is_enabled("leave team")
 def leave(email, team_id):
     # data = request.get_json(silent=True)

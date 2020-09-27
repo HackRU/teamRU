@@ -23,6 +23,8 @@ def ensure_feature_is_enabled(feature):
 
 
 validator = Draft4Validator({"type": "object"})
+
+
 def ensure_json(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
@@ -40,13 +42,14 @@ def ensure_json(func):
 def ensure_user_logged_in(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
-        resp, status_code = call_validate_endpoint(token)
-        if status_code != 200:
-            return resp, status_code
-
         token = request.headers.get("token")
         if not token:
-            return {"message": "Missing email or token"}, 401
+            return {"message": "Missing token"}, 401
+
+        # resp, status_code = call_validate_endpoint(token)
+        # if status_code != 200:
+        #     return resp, status_code
+
         try:
             decoded_payload = jwt.decode(token, verify=False)
         except jwt.exceptions.InvalidTokenError as err:

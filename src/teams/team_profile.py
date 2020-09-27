@@ -45,7 +45,7 @@ def get_team_profile(email, team_id):  # GET
 def update_team_profile(email, team_id, **kwargs):  # PUT
     """update team information
 
-          returns team information as text in json, accept kwargs: desc,partnerskills,prizes,interested
+          returns team information as text in json, accept kwargs: desc, skills, prizes, interested
 
           Args:
               email: email of a team member
@@ -63,27 +63,30 @@ def update_team_profile(email, team_id, **kwargs):  # PUT
         return {"message": f"User not team {team_id}"}, 403
 
     desc = team["desc"]
-    partnerskills = team["partnerskills"]
+    skills = team["skills"]
     prizes = team["prizes"]
-    interested = team["interested"]
+    interests = team["interests"]
 
     # team_name = kwargs["id_"]
     if "desc" in kwargs.keys():
         desc = kwargs["desc"]
-    if "partnerskills" in kwargs.keys():
-        partnerskills = kwargs["partnerskills"]
+    if "skills" in kwargs.keys():
+        skills = kwargs["skills"]
     if "prizes" in kwargs.keys():
         prizes = kwargs["prizes"]
-    if "interested" in kwargs.keys():
-        interested = kwargs["interested"]
+    if "interests" in kwargs.keys():
+        interests = kwargs["interests"]
 
-    coll("teams").update({"_id": team_name}, {
-        "$set": {
-            "desc": desc,
-            "partnerskills": partnerskills,
-            "prizes": prizes,
-            "interested": interested
-        }
-    })
+    coll("teams").update(
+        {"_id": team_name},
+        {
+            "$set": {
+                "desc": desc,
+                "skills": skills,
+                "prizes": prizes,
+                "interests": interests,
+            }
+        },
+    )
 
     return {"message": "Team profile successfully updated"}, 200

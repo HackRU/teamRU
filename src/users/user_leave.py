@@ -1,4 +1,5 @@
 from src.flaskapp.db import coll
+from src.flaskapp.util import aggregate_team_meta
 
 
 def user_leave(email, team_id):  # POST
@@ -15,15 +16,25 @@ def user_leave(email, team_id):  # POST
     user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
     if not user_in_a_team:
         return {"message": "User doesn't have a team"}, 400
-    team_name = coll("teams").find_one({"members": {"$all": [email]}}, {"_id"})["_id"]
-    if team_name != team_id:
+    team = coll("teams").find_one({"members": {"$all": [email]}})
+    if team["_id"] != team_id:
         return {"message": f"User not team {team_id}"}, 403
 
-    team_size = len(coll("teams").find_one({"_id": team_name})["members"])
+    team_size = len(team["members"])
     if team_size == 1:
-        coll("teams").delete_one({"_id": team_name})
+        coll("teams").delete_one({"_id": team["_id"]})
     else:
-        coll("teams").update_one({"_id": team_name}, {"$pull": {"members": email}})
-        coll("teams").update_one({"_id": team_name}, {"$set": {"complete": False}})
+        coll("teams").update_one(
+            {"_id": team["_id"]},
+            {
+                "$pull": {"members": email},
+                "$set": {"complete": False},
+                "$set": {
+                    "meta": aggregate_team_meta(
+                        [member for member in team["members"] if not (member == email)],
+                    )
+                },
+            },
+        )
     coll("users").update_one({"_id": email}, {"$set": {"hasateam": False}})
     return {"message": "Success"}, 200

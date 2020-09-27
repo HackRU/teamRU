@@ -1,5 +1,5 @@
 from src.flaskapp.db import coll
-
+from src.flaskapp.util import aggregate_team_meta
 
 # same issue here,
 def team_confirm(team1_name, team2_name):  # if request.method == 'POST'
@@ -11,7 +11,7 @@ def team_confirm(team1_name, team2_name):  # if request.method == 'POST'
 
        Args:
            team1_name: name of the team that is confirming the invite (invitee)
-           team2_name: name of the team that send the invite (inviter)
+           team2_name: name of the team that sent the invite (inviter)
 
        Return:
             response object
@@ -32,7 +32,7 @@ def team_confirm(team1_name, team2_name):  # if request.method == 'POST'
     if team1["complete"] or team2["complete"]:
         return {"message": "Team Complete"}, 405
     if not (
-        team1_name in team2["incoming_inv"] and team2_name in team1["outgoing_inv"]
+        team1_name in team2["outgoing_inv"] and team2_name in team1["incoming_inv"]
     ):
         return (
             {"message": "invite no longer valid"},
@@ -49,6 +49,7 @@ def team_confirm(team1_name, team2_name):  # if request.method == 'POST'
             "$push": {"members": {"$each": team1["members"]}},
             "$pull": {"outgoing_inv": team1_name},
             "$set": {"complete": new_length == 4},
+            "$set": {"meta": aggregate_team_meta(team1["members"] + team2["members"])},
         },
     )
     coll("teams").delete_one({"_id": team1_name})
