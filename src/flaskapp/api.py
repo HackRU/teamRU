@@ -94,12 +94,12 @@ def single_user(email):
     if request.method == "PUT":
         data = request.get_json(silent=True)
 
-        temp = {
+        kwargs = {
             name: format_string(data[name])
             for name in ["prizes", "skills", "bio", "github", "interests", "seriousness"]
             if data.get(name)
         }
-        return update_user_profile(email, **temp)
+        return update_user_profile(email, **kwargs)
 
 
 ############################## TEAMS ##############################
@@ -147,7 +147,14 @@ def single_team(email, team_id):
         return get_team_profile(email, team_id)
 
     if request.method == "PUT":
-        return update_team_profile(email, team_id)
+        data = request.get_json(silent=True)
+
+        kwargs = {
+            name: format_string(data[name])
+            for name in ["desc", "skills", "prizes"]
+            if data.get(name)
+        }
+        return update_team_profile(email, team_id, **kwargs)
 
 
 @app.route("/teams/<team_id>/complete", methods=["PUT"])

@@ -96,9 +96,10 @@ def update_user_profile(email, **kwargs):  # PUT
     Returns:
         Status of update (dict)
     """
-    user_exists = coll("users").find_one({"_id": email})
-    if not user_exists:
+    user = coll("users").find_one({"_id": email})
+    if not user:
         return {"message": "User not found"}, 404
 
     coll("users").update_one({"_id": email}, {"$set": kwargs})
+
     return {"message": "User profile successfully updated"}, 200

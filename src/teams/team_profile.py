@@ -116,7 +116,7 @@ def create_team_profile(team_name, email, team_desc, skills, prizes):
     return {"message": "Team profile successfully created"}, 201
 
 
-# TODO should user have ability to change team name?
+# Should user have ability to change team name?
 def update_team_profile(email, team_id, **kwargs):  # PUT
     """update team information
 
@@ -135,26 +135,6 @@ def update_team_profile(email, team_id, **kwargs):  # PUT
     if email not in team["members"]:
         return {"message": f'User not in team "{team_id}"'}, 403
 
-    desc = team["desc"]
-    skills = team["skills"]
-    prizes = team["prizes"]
-
-    if "desc" in kwargs.keys():
-        desc = kwargs["desc"]
-    if "skills" in kwargs.keys():
-        skills = kwargs["skills"]
-    if "prizes" in kwargs.keys():
-        prizes = kwargs["prizes"]
-
-    coll("teams").update(
-        {"_id": team_id},
-        {
-            "$set": {
-                "desc": desc,
-                "skills": skills,
-                "prizes": prizes,
-            }
-        },
-    )
+    coll("teams").update_one({"_id": team_id}, {"$set": kwargs})
 
     return {"message": "Team profile successfully updated"}, 200
