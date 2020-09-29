@@ -1,7 +1,7 @@
 from src.flaskapp.db import coll
 
 
-def team_rescind(team1_name, team2_name):  # POST
+def team_rescind(email, team1_name, team2_name):  # POST
     """rescind an invite (i.e. team1 -rescind-> team2)
 
     Removes team2 from team1 outgoing_inv and removes team1 from team2's incoming_inv
@@ -9,7 +9,7 @@ def team_rescind(team1_name, team2_name):  # POST
     Args:
         team1_name: name of the team that is rescinding the invite (i.e. the team that sent the invite)
         team2_name: name of the team that is rescinded (i.e. the invitee)
-    
+
     Returns:
         response object
     """
@@ -17,7 +17,8 @@ def team_rescind(team1_name, team2_name):  # POST
     team2 = coll("teams").find_one({"_id": team2_name})
     if not team1 or not team2:
         return {"message": "Invalid name"}, 402
-    # FIXME Don't know if this is going to be an issue but this doesn't return an error if the endpoint is rejecting an invite that doesn't exist.
+    # FIXME Don't know if this is going to be an issue but this doesn't return an error
+    # if the endpoint is rejecting an invite that doesn't exist.
     if email not in team1["members"]:
         return {"message": f"User not in team {team1_name}"}, 403
     coll("teams").update_one(

@@ -13,12 +13,12 @@ def user_leave(email, team_id):  # POST
     Return:
         response object
     """
-    user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
-    if not user_in_a_team:
-        return {"message": "User doesn't have a team"}, 400
-    team = coll("teams").find_one({"members": {"$all": [email]}})
-    if team["_id"] != team_id:
-        return {"message": f"User not team {team_id}"}, 403
+    team = coll("teams").find_one({"_id": team_id})
+    if not team:
+        return {"message": "Team does not exist"}, 400
+
+    if email not in team["members"]:
+        return {"message": f'User not in team "{team_id}"'}, 403
 
     team_size = len(team["members"])
     if team_size == 1:
@@ -31,7 +31,7 @@ def user_leave(email, team_id):  # POST
                 "$set": {"complete": False},
                 "$set": {
                     "meta": aggregate_team_meta(
-                        [member for member in team["members"] if not (member == email)],
+                        [member for member in team["members"] if member != email],
                     )
                 },
             },

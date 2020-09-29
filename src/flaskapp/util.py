@@ -1,37 +1,34 @@
-from src.flaskapp.db import coll
-from itertools import chain
-
 """Utility functions that are used throughout the codebase."""
 
+from src.flaskapp.db import coll
 
-def format_string(s):
+
+def format_string(input_):
     """Formats the input depending on if it is a string or a list of strings.
 
-    Determines the type of the input. If it is a string then strips leading spaces and lowercases all letters. If it is a list, then the aforementioned process is applied to each of the list elements. 
+    Determines the type of the input. If it is a string then strips leading spaces and lowercases
+    all letters. If it is a list, then the aforementioned process is applied to each of the list elements.
 
-    Arg: 
+    Arg:
         s: string or list of strings that needs to be formatted
 
-    Return: 
+    Return:
         a formated string is returned if a string is provided
-    a formated list is returned if a list is provided
+        a formated list is returned if a list is provided
     """
-    if isinstance(s, str):
-        return s.strip().lower()
-    if isinstance(s, list):
+    if isinstance(input_, str):
+        return input_.strip().lower()
+    if isinstance(input_, list):
         res = []
-        for string in s:
-            if isinstance(string, str):
-                res.append(string.strip().lower())
+        for element in input_:
+            if isinstance(element, str):
+                res.append(element.strip().lower())
             else:
-                try:
-                    res.append(str(string).strip().lower())
-                except:
-                    res.append(
-                        string
-                    )  # NOTE when the element is not of string typ (we can handle this case different if necessary)
+                # NOTE when the element is not of string typ (we can handle this case different if necessary)
+                res.append(element)
         return res
-    return s  # NOTE Simply returns the input if the input is not a string or a list
+    # NOTE Simply returns the input if the input is not a string or a list
+    return input_
 
     #  TestCases:
     #     print(format_string("  JaS on   "))
@@ -53,4 +50,3 @@ def aggregate_team_meta(members):
         "prizes": list(prizes),
         "interests": list(interests),
     }
-

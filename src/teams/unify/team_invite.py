@@ -1,10 +1,11 @@
 from src.flaskapp.db import coll
 
 
-def team_invite(team1_name, team2_name):  # POST
+def team_invite(email, team1_name, team2_name):  # POST
     """Invite another team to join your team (i.e. team1 -inviting-> team2)
 
-    Performs checks to see if these two team can merge then adds team2 to team1's outgoing_inv list and adds team1 to team2's incoming_inv list
+    Performs checks to see if these two team can merge then adds team2 to team1's outgoing_inv
+    list and adds team1 to team2's incoming_inv list
 
     Args:
         team1_name: the name of the team that is interested in team2 (inviter)

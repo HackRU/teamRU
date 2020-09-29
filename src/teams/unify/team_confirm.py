@@ -2,20 +2,22 @@ from src.flaskapp.db import coll
 from src.flaskapp.util import aggregate_team_meta
 
 # same issue here,
-def team_confirm(team1_name, team2_name):  # if request.method == 'POST'
+def team_confirm(email, team1_name, team2_name):  # if request.method == 'POST'
     """Confirming an invitation from a team (i.e. team1 -confirms-> team2)
 
-       Performs checks to see if the merging can be carried out still (checks include: 1) new team size is not > 4 2) no rescinds or rejects beforehand which would have nullified the invite) 
-       
-       If checks pass then team2 is merged with team1 by adding team2's member(s) into team1's member list and setting team1 to complete if the new team size is 4
+    Performs checks to see if the merging can be carried out still (checks include: 1) new team
+    size is not > 4 2) no rescinds or rejects beforehand which would have nullified the invite)
 
-       Args:
-           team1_name: name of the team that is confirming the invite (invitee)
-           team2_name: name of the team that sent the invite (inviter)
+    If checks pass then team2 is merged with team1 by adding team2's member(s) into team1's member
+    list and setting team1 to complete if the new team size is 4
 
-       Return:
-            response object
-       """
+    Args:
+        team1_name: name of the team that is confirming the invite (invitee)
+        team2_name: name of the team that sent the invite (inviter)
+
+    Return:
+         response object
+    """
     # team_name = coll("teams").find_one({"members": {"$all": [email]}}, {"_id"})["_id"]
     # team = coll("teams").find_one({"_id": team_name})
     # team_members = team["members"]
@@ -42,7 +44,9 @@ def team_confirm(team1_name, team2_name):  # if request.method == 'POST'
     # coll("users").update_one({"_id": hacker}, {"$set": {"hasateam": True}})
     # coll("users").update_one({"_id": hacker}, {"$pull": {"potentialteams": team_name}})
 
-    # NOTE So we can do merging of the two teams (documents)however we want (this is just an example) currently the other team is being deleted but we should really archive it for futuring training purposes for our ML model
+    # NOTE So we can do merging of the two teams (documents) however we want (this is just an example)
+    # currently the other team is being deleted but we should really archive it for futuring training
+    # purposes for our ML model
     coll("teams").update_one(
         {"_id": team2_name},
         {

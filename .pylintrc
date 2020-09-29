@@ -1,0 +1,6 @@
+[MESSAGES CONTROL]
+
+# Disable C0114 (Module Docstrings), C0116 (Function Docstrings), W0511 (TODO/FIXME Comments)
+disable=C0114,C0116,W0511
+
+max-line-length=120

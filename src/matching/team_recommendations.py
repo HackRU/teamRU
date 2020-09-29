@@ -11,7 +11,6 @@ def get_team_recommendations(email):  # GET
 
     Return:
         a list of recommmended teams to join
-
     """
     user = coll("users").find_one({"_id": email})
     if not user:
@@ -51,4 +50,3 @@ def get_team_recommendations(email):  # GET
     if not matches:
         return {"message": "No recommendations found"}, 400
     return {"matches": matches}, 200
-
