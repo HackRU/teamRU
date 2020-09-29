@@ -2,10 +2,9 @@ from pymongo import MongoClient
 
 import src.flaskapp.config as config
 
-
-def get_db():
-    return MongoClient(config.DB_URI).get_database()
+client = MongoClient(config.DB_URI).get_database()
 
 
 def coll(coll_name):
-    return get_db()[config.DB_COLLECTIONS[coll_name]]
+    # coll_name can be either "users" or "teams"
+    return client[coll_name]
