@@ -1,7 +1,7 @@
 from src.flaskapp.db import coll
 from src.flaskapp.util import aggregate_team_meta
 
-# same issue here,
+
 def team_confirm(email, team1_name, team2_name):  # if request.method == 'POST'
     """Confirming an invitation from a team (i.e. team1 -confirms-> team2)
 
@@ -18,31 +18,24 @@ def team_confirm(email, team1_name, team2_name):  # if request.method == 'POST'
     Return:
          response object
     """
-    # team_name = coll("teams").find_one({"members": {"$all": [email]}}, {"_id"})["_id"]
-    # team = coll("teams").find_one({"_id": team_name})
-    # team_members = team["members"]
     team1 = coll("teams").find_one({"_id": team1_name})
     team2 = coll("teams").find_one({"_id": team2_name})
 
-    # complete = coll("teams").find_one({"_id": team_name, "complete": True})
     if not team1 or not team2:
-        return {"message": "Invalid name"}, 402
+        return {"message": "Invalid team name(s)"}, 404
+
     if email not in team1["members"]:
         return {"message": f"User not in team {team1_name}"}, 403
-    if (new_length := len(team1["members"]) + len(team2["members"])) > 4:
-        return {"message": "Team size will be greater than 4"}, 403
-    if team1["complete"] or team2["complete"]:
-        return {"message": "Team Complete"}, 405
-    if not (
-        team1_name in team2["outgoing_inv"] and team2_name in team1["incoming_inv"]
-    ):
-        return (
-            {"message": "invite no longer valid"},
-            402,
-        )  # FIXME not sure about the error code
 
-    # coll("users").update_one({"_id": hacker}, {"$set": {"hasateam": True}})
-    # coll("users").update_one({"_id": hacker}, {"$pull": {"potentialteams": team_name}})
+    new_length = len(team1["members"]) + len(team2["members"])
+    if new_length > 4:
+        return {"message": "Team size will be greater than 4"}, 409
+
+    if team1["complete"] or team2["complete"]:
+        return {"message": "Team complete"}, 409
+
+    if team1_name not in team2["outgoing_inv"] and team2_name not in team1["incoming_inv"]:
+        return {"message": "Invite no longer exists"}, 404
 
     # NOTE So we can do merging of the two teams (documents) however we want (this is just an example)
     # currently the other team is being deleted but we should really archive it for futuring training
@@ -57,5 +50,4 @@ def team_confirm(email, team1_name, team2_name):  # if request.method == 'POST'
         },
     )
     coll("teams").delete_one({"_id": team1_name})
-    # coll("teams").update_one({"_id": team2_name}, {"$pull": {"interested": hacker}})
     return {"message": "Success"}, 200

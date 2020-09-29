@@ -14,25 +14,20 @@ def team_invite(email, team1_name, team2_name):  # POST
     Return:
         response object
     """
-    # user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
-    # if user_in_a_team:
-    #     return {"message": "User in a team"}, 403
-
     team1 = coll("teams").find_one({"_id": team1_name})
     team2 = coll("teams").find_one({"_id": team2_name})
 
     if not team1 or not team2:
-        return {"message": "Invalid name"}, 402
+        return {"message": "Invalid team name(s)"}, 404
+
     if email not in team1["members"]:
         return {"message": f"User not in team {team1_name}"}, 403
-    if len(team1["members"]) + len(team2["members"]) > 4:
-        return {"message": "Team size will be greater than 4"}, 403
-    if team1["complete"] or team2["complete"]:
-        return {"message": "Team already complete "}, 405
 
-    # complete = coll("teams").find_one({"_id": team_name, "complete": True})
-    # if complete or len(team["members"]) >= 4:
-    #     return {"message": "Team complete"}, 405
+    if len(team1["members"]) + len(team2["members"]) > 4:
+        return {"message": "Team size will be greater than 4"}, 409
+
+    if team1["complete"] or team2["complete"]:
+        return {"message": "Team already complete "}, 409
 
     coll("teams").update_one(
         {"_id": team1_name}, {"$push": {"outgoing_inv": team2_name}}
