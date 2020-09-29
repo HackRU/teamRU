@@ -1,7 +1,7 @@
 from src.flaskapp.db import coll
 
 
-def team_reject(team1_name, team2_name):  # POST
+def team_reject(email, team1_name, team2_name):  # POST
     """rejecting an invite (i.e. team1 -reject-> team2 (rejecting an invite)
 
     Removes team2 from team1's incoming_inv list and removes team1 from team2's outgoing_inv list
@@ -17,10 +17,14 @@ def team_reject(team1_name, team2_name):  # POST
     team2 = coll("teams").find_one({"_id": team2_name})
 
     if not team1 or not team2:
-        return {"message": "Invalid name"}, 402
-    # FIXME Don't know if this is going to be an issue but this doesn't return an error if the endpoint is rejecting an invite that doesn't exist.
+        return {"message": "Invalid team name(s)"}, 404
+
     if email not in team1["members"]:
         return {"message": f"User not in team {team1_name}"}, 403
+
+    if team1_name not in team2["outgoing_inv"] or team2_name not in team1["incoming_inv"]:
+        return {"message": "No invite to reject"}, 404
+
     coll("teams").update_one(
         {"_id": team1_name}, {"$pull": {"incoming_inv": team2_name}}
     )
@@ -28,4 +32,3 @@ def team_reject(team1_name, team2_name):  # POST
         {"_id": team2_name}, {"$pull": {"outgoing_inv": team1_name}}
     )
     return {"message": "Success"}, 200
-

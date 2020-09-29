@@ -10,8 +10,7 @@ def get_team_recommendations(email):  # GET
         email: the email of the individual that wants recommendations of teams to join
 
     Return:
-        a list of recommended teams to join
-
+        a list of recommmended teams to join
     """
     user = coll("users").find_one({"_id": email})
     if not user:
