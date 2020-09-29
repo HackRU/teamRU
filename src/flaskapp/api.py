@@ -96,7 +96,7 @@ def single_user(email):
 
         temp = {
             name: format_string(data[name])
-            for name in ["prizes", "skills", "bio", "github"]
+            for name in ["prizes", "skills", "bio", "github", "interests", "seriousness"]
             if data.get(name)
         }
         return update_user_profile(email, **temp)
