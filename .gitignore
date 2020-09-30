@@ -1,6 +1,20 @@
-*.pyc
-.idea
-*.iml
-*config.py
-settings.json
+# Virtual environment
+venv/
+
+# Config
 config.py
+
+# Python
+*.pyc
+__pycache__/
+
+# IntelliJ
+*.iml
+.idea/
+
+# VSCode
+.vscode/
+
+# Deployment
+rootkey.csv
+zappa_settings.json

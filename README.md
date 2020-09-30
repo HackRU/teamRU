@@ -1,4 +1,4 @@
-# Team Builder
+# TeamRU
 
 ## Description
 
@@ -30,9 +30,10 @@ Since teambuilder will be part of the main hackru website, I figured that the be
 1) clone the repo 
 2) After cloning the repo, you have to add all the required info to the config file. You can find it in the teamBuilder chat.
 3) cd to teamRU
-4) run "pip3 install --user -r requirements.txt"
-5) run "export FLASK_APP=run.py"
-6) run "flask run"
+4) run `pip3 install --user -r requirements.txt`
+5) run `export FLASK_APP=src/flaskapp/api.py`
+6) run `flask run`
+
 
 
 ### Disabling/Enabling certain features:

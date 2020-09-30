@@ -1,6 +1,6 @@
 import pytest
 import requests
-from app.util import login
+from src.flaskapp.util import login
 
 api_url = ""
 
