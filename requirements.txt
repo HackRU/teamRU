@@ -34,3 +34,6 @@ urllib3==1.25.10
 Werkzeug==0.16.1
 wsgi-request-logger==0.4.6
 zappa==0.51.0
+
+PyGithub~=1.53
+pytest~=6.0.1
