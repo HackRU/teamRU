@@ -40,7 +40,6 @@ def index():
 @app.route("/users", methods=["GET", "POST"])
 @authenticate
 def users(email):
-    # email = None  # unused
 
     if request.method == "GET":
         # Filter response using query parameters
@@ -50,7 +49,6 @@ def users(email):
     if request.method == "POST":
         # Create a new user
         data = request.get_json(silent=True)
-        # email = format_string(data["user_email"])
         prizes = []
         skills = []
         interests = []
@@ -116,7 +114,6 @@ def single_user(email):
 @app.route("/teams", methods=["GET", "POST"])
 @authenticate
 def teams(email):
-    # email = None  # unused
 
     if request.method == "GET":
         args = request.args
@@ -127,7 +124,6 @@ def teams(email):
 
     if request.method == "POST":
         data = request.get_json(silent=True)
-        # email = format_string(data["user_email"])
 
         if (
             not data
