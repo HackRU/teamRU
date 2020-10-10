@@ -37,7 +37,10 @@ def team_confirm(email, team1_name, team2_name):  # if request.method == 'POST'
     if team1["complete"] or team2["complete"]:
         return {"message": "Team complete"}, 409
 
-    if team1_name not in team2["outgoing_inv"] and team2_name not in team1["incoming_inv"]:
+    if (
+        team1_name not in team2["outgoing_inv"]
+        and team2_name not in team1["incoming_inv"]
+    ):
         return {"message": "Invite no longer exists"}, 404
 
     # NOTE So we can do merging of the two teams (documents) however we want (this is just an example)
@@ -54,5 +57,13 @@ def team_confirm(email, team1_name, team2_name):  # if request.method == 'POST'
             },
         },
     )
-    coll("teams").delete_one({"_id": team1_name})
+
+    doc = coll("teams").find_one_and_delete({"_id": team1_name})
+    doc["name"] = doc.pop(
+        "_id"
+    )  # NOTE "_id" field is removed so that Mongodb will assign it's own unique identifier for the doc which will allow duplicates to be stored.
+    coll("archive").insert_one(doc)
+
+    # NOTE  At the end of HackRU we can perform a backup job which will archive all the successfully created team
+
     return {"message": "Success"}, 200
