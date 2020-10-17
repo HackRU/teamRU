@@ -1,7 +1,6 @@
 import shortuuid
 from src.flaskapp.db import coll
 from src.flaskapp.util import aggregate_team_meta
-import shortuuid
 
 
 def get_team_profile(email, team_id):  # GET
