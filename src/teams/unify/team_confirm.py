@@ -54,6 +54,9 @@ def team_confirm(email, team1_id, team2_id):  # if request.method == 'POST'
             },
         },
     )
+    coll("users").update(
+        {"_id": {"$in": team1["members"]}}, {"$set": {"team_id": team2_id}}
+    )
 
     doc = coll("teams").find_one_and_delete({"_id": team1_id})
     coll("archive").insert_one(doc)

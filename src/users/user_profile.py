@@ -75,6 +75,7 @@ def create_user_profile(email, **kwargs):  # POST
             "github": kwargs["github"],
             "interests": kwargs["interests"],
             "seriousness": kwargs["seriousness"],
+            "team_id": "",
             "hasateam": False,
         }
     )
