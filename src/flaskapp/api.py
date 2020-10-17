@@ -184,81 +184,53 @@ def leave(email, team_id):
 
 @app.route("/teams/<team1_id>/invite", methods=["POST"])
 @authenticate
-<<<<<<< HEAD
-=======
 @cors
->>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
 def invite(email, team1_id):
     # NOTE team1 -inviting-> team2 (invite another team)
     # team1_name = team_id
     data = request.get_json(silent=True)
     if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
-<<<<<<< HEAD
-    team2_id = data["name"]
-=======
     team2_id = data["team2_id"]
->>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
     return team_invite(email, team1_id, team2_id)
 
 
 @app.route("/teams/<team1_id>/confirm", methods=["POST"])
 @authenticate
-<<<<<<< HEAD
-=======
 @cors
->>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
 def confirm(email, team1_id):
     # NOTE team1 -confirms-> team2 (confirm an invite)
     # team1_name = team_id
     data = request.get_json(silent=True)
     if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
-<<<<<<< HEAD
-    team2_id = data["name"]
-=======
     team2_id = data["team2_id"]
->>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
     return team_confirm(email, team1_id, team2_id)
 
 
 @app.route("/teams/<team1_id>/rescind", methods=["POST"])
 @authenticate
-<<<<<<< HEAD
-=======
 @cors
->>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
 def rescind(email, team1_id):
     # NOTE team1 -rescind-> team2 (rescind an invite)
     # team1_name = team_id
     data = request.get_json(silent=True)
     if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
-<<<<<<< HEAD
-    team2_id = data["name"]
-=======
     team2_id = data["team2_id"]
->>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
     return team_rescind(email, team1_id, team2_id)
 
 
 @app.route("/teams/<team1_id>/reject", methods=["POST"])
 @authenticate
-<<<<<<< HEAD
-=======
 @cors
->>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
 def reject(email, team1_id):
     # NOTE team1 -reject-> team2 (rejecting an invite)
     # team1_name = team_id
     data = request.get_json(silent=True)
     if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
-<<<<<<< HEAD
-    team2_id = data["name"]
-=======
     team2_id = data["team2_id"]
->>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
     return team_reject(email, team1_id, team2_id)
 
 
