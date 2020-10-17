@@ -1,3 +1,4 @@
+import shortuuid
 from src.flaskapp.db import coll
 from src.flaskapp.util import aggregate_team_meta
 
@@ -42,7 +43,6 @@ def get_team_profiles(search):
         available_teams = coll("teams").find({"complete": False}, {"meta": False})
         all_open_teams = []
         for team in available_teams:
-            # del team["meta"]
             all_open_teams.append(team)
         if not all_open_teams:
             return {"message": "No open teams"}, 400
@@ -62,7 +62,6 @@ def get_team_profiles(search):
     )
     all_open_teams = []
     for team in available_teams:
-        # del team["meta"]
         all_open_teams.append(team)
     if not all_open_teams:
         return {"message": "No open teams"}, 400
@@ -84,21 +83,31 @@ def create_team_profile(team_name, email, team_desc, skills, prizes):
     Return:
         response object(403:Invalid user, 401:Invalid name, 402:User In a team, 200: Success)
     """
-    team_exist = coll("teams").find_one({"_id": team_name})
+    # team_exist = coll("teams").find_one({"_id": team_name}) #team name no longer need to be unique because we have uuid for "_id"
+
     user = coll("users").find_one({"_id": email})
 
     if not user:
         return {"message": "User does not exist"}, 404
-    if team_exist:
-        return {"message": "Team name already exists"}, 400
+
+    # if team_exist:
+    #     return {"message": "Team name already exists"}, 400 #team name no longer need to be unique because we have uuid for "_id"
 
     if user["hasateam"]:
         return {"message": "User in a team"}, 400
 
     coll("users").update_one({"_id": email}, {"$set": {"hasateam": True}})
+
+    # Don't think we need a check but just incase if uuid is not strong enough
+    # while True:  # make sure our id is not a repeat
+    #     random_id = random.randint(1000, 9999)
+    #     if not coll("teams").find_one({"_id": random_id}):
+    #         break
+
     coll("teams").insert(
         {
-            "_id": team_name,
+            "_id": shortuuid.ShortUUID().random(length=15),
+            "name": team_name,
             "members": [email],
             "desc": team_desc,
             "skills": skills,
