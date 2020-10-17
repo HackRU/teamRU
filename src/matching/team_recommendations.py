@@ -90,10 +90,10 @@ def get_team_recommendations(email):  # GET
                 matches.append(m)
 
     # if there are too many matches, reduce it base on seriousness
-    if matches.size > 10:
+    if matches.size > 20:
         user_seriousness = user["seriousness"]
         for team in matches:
-            if (abs(team["seriousness"] - user_seriousness)) > 1:
+            if (abs(team["seriousness"] - user_seriousness)) > 2:
                 matches.remove(team)
 
     # return

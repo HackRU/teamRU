@@ -55,7 +55,7 @@ def create_user_profile(email, **kwargs):  # POST
         6. interests (list of str) - optional (AR/VR, BlockChain, Communications, CyberSecurity,
             DevOps, Fintech, Gaming, Healthcare, IoT, LifeHacks, ML/AI, Music, Productivity,
             Social Good, Voice Skills)
-        7. seriousness (enum {i.e. int - 1,2, or 3}) - optional
+        7. seriousness (enum {i.e. int - 1-5}) - optional
 
     Returns:
         User profile object (dict)

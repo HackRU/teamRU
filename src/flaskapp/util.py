@@ -42,14 +42,18 @@ def aggregate_team_meta(members):
     team_members = coll("users").find({"_id": {"$in": members}})
     skills, prizes, interests = set(), set(), set()
     seriousness = 0;
+
     for member in team_members:
         skills.update(member["skills"])
         prizes.update(member["prizes"])
         interests.update(member["interests"])
         intensity = intensity + member["seriousness"]
+
+    intensity = intensity/len(members)
+
     return {
         "skills": list(skills),
         "prizes": list(prizes),
         "interests": list(interests),
-        "intensity": seriousness,
+        "intensity": intensity,
     }
