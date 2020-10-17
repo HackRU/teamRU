@@ -1,3 +1,4 @@
+import shortuuid
 from src.flaskapp.db import coll
 from src.flaskapp.util import aggregate_team_meta
 import shortuuid
@@ -96,10 +97,14 @@ def create_team_profile(team_name, email, team_desc, skills, prizes):
     if user["hasateam"]:
         return {"message": "User in a team"}, 400
 
+<<<<<<< HEAD
     random_id = shortuuid.ShortUUID().random(length=15)
     coll("users").update_one(
         {"_id": email}, {"$set": {"hasateam": True, "team_id": random_id}}
     )
+=======
+    coll("users").update_one({"_id": email}, {"$set": {"hasateam": True}})
+>>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
 
     # Don't think we need a check but just incase if uuid is not strong enough
     # while True:  # make sure our id is not a repeat
@@ -109,7 +114,11 @@ def create_team_profile(team_name, email, team_desc, skills, prizes):
 
     coll("teams").insert(
         {
+<<<<<<< HEAD
             "_id": random_id,
+=======
+            "_id": shortuuid.ShortUUID().random(length=15),
+>>>>>>> badaa9e146651c8b5512779eecacb5471af97df7
             "name": team_name,
             "members": [email],
             "desc": team_desc,
