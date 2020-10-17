@@ -182,7 +182,7 @@ def invite(email, team1_id):
     # NOTE team1 -inviting-> team2 (invite another team)
     # team1_name = team_id
     data = request.get_json(silent=True)
-    if not data or "name" not in data or not data["team2_id"]:
+    if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
     team2_id = data["team2_id"]
     return team_invite(email, team1_id, team2_id)
@@ -194,7 +194,7 @@ def confirm(email, team1_id):
     # NOTE team1 -confirms-> team2 (confirm an invite)
     # team1_name = team_id
     data = request.get_json(silent=True)
-    if not data or "name" not in data or not data["team2_id"]:
+    if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
     team2_id = data["team2_id"]
     return team_confirm(email, team1_id, team2_id)
@@ -206,7 +206,7 @@ def rescind(email, team1_id):
     # NOTE team1 -rescind-> team2 (rescind an invite)
     # team1_name = team_id
     data = request.get_json(silent=True)
-    if not data or "name" not in data or not data["team2_id"]:
+    if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
     team2_id = data["team2_id"]
     return team_rescind(email, team1_id, team2_id)
@@ -218,7 +218,7 @@ def reject(email, team1_id):
     # NOTE team1 -reject-> team2 (rejecting an invite)
     # team1_name = team_id
     data = request.get_json(silent=True)
-    if not data or "name" not in data or not data["team2_id"]:
+    if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
     team2_id = data["team2_id"]
     return team_reject(email, team1_id, team2_id)
