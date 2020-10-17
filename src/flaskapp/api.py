@@ -41,7 +41,6 @@ def index():
 @authenticate
 @cors
 def users(email):
-    # email = None  # unused
 
     if request.method == "GET":
         # Filter response using query parameters
@@ -51,7 +50,6 @@ def users(email):
     if request.method == "POST":
         # Create a new user
         data = request.get_json(silent=True)
-        # email = format_string(data["user_email"])
         prizes = []
         skills = []
         interests = []
@@ -119,7 +117,6 @@ def single_user(email):
 @authenticate
 @cors
 def teams(email):
-    # email = None  # unused
 
     if request.method == "GET":
         args = request.args
@@ -130,7 +127,6 @@ def teams(email):
 
     if request.method == "POST":
         data = request.get_json(silent=True)
-        # email = format_string(data["user_email"])
 
         if (
             not data
@@ -163,7 +159,7 @@ def single_team(email, team_id):
 
         kwargs = {
             name: format_string(data[name])
-            for name in ["desc", "skills", "prizes"]
+            for name in ["name", "desc", "skills", "prizes"]
             if data.get(name)
         }
         return update_team_profile(email, team_id, **kwargs)
@@ -186,56 +182,56 @@ def leave(email, team_id):
 ############################## UNIFY ##############################
 
 
-@app.route("/teams/<team_id>/invite", methods=["POST"])
+@app.route("/teams/<team1_id>/invite", methods=["POST"])
 @authenticate
 @cors
-def invite(email, team_id):
+def invite(email, team1_id):
     # NOTE team1 -inviting-> team2 (invite another team)
-    team1_name = team_id
+    # team1_name = team_id
     data = request.get_json(silent=True)
-    if not data or "name" not in data or not data["name"]:
+    if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
-    team2_name = format_string(data["name"])
-    return team_invite(email, team1_name, team2_name)
+    team2_id = data["team2_id"]
+    return team_invite(email, team1_id, team2_id)
 
 
-@app.route("/teams/<team_id>/confirm", methods=["POST"])
+@app.route("/teams/<team1_id>/confirm", methods=["POST"])
 @authenticate
 @cors
-def confirm(email, team_id):
+def confirm(email, team1_id):
     # NOTE team1 -confirms-> team2 (confirm an invite)
-    team1_name = team_id
+    # team1_name = team_id
     data = request.get_json(silent=True)
-    if not data or "name" not in data or not data["name"]:
+    if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
-    team2_name = format_string(data["name"])
-    return team_confirm(email, team1_name, team2_name)
+    team2_id = data["team2_id"]
+    return team_confirm(email, team1_id, team2_id)
 
 
-@app.route("/teams/<team_id>/rescind", methods=["POST"])
+@app.route("/teams/<team1_id>/rescind", methods=["POST"])
 @authenticate
 @cors
-def rescind(email, team_id):
+def rescind(email, team1_id):
     # NOTE team1 -rescind-> team2 (rescind an invite)
-    team1_name = team_id
+    # team1_name = team_id
     data = request.get_json(silent=True)
-    if not data or "name" not in data or not data["name"]:
+    if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
-    team2_name = format_string(data["name"])
-    return team_rescind(email, team1_name, team2_name)
+    team2_id = data["team2_id"]
+    return team_rescind(email, team1_id, team2_id)
 
 
-@app.route("/teams/<team_id>/reject", methods=["POST"])
+@app.route("/teams/<team1_id>/reject", methods=["POST"])
 @authenticate
 @cors
-def reject(email, team_id):
+def reject(email, team1_id):
     # NOTE team1 -reject-> team2 (rejecting an invite)
-    team1_name = team_id
+    # team1_name = team_id
     data = request.get_json(silent=True)
-    if not data or "name" not in data or not data["name"]:
+    if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
-    team2_name = format_string(data["name"])
-    return team_reject(email, team1_name, team2_name)
+    team2_id = data["team2_id"]
+    return team_reject(email, team1_id, team2_id)
 
 
 ############################## MATCHES ##############################
