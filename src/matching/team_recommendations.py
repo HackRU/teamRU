@@ -1,4 +1,5 @@
 from src.flaskapp.db import coll
+from src.flaskapp.util import aggregate_team_meta
 
 
 def get_team_recommendations(email):  # GET
@@ -28,17 +29,17 @@ def get_team_recommendations(email):  # GET
     else:
         prizes = user["prizes"]
         names = set()
-
+    # match for skill
     matches = []
     for skill in skills:
         # collection of all the team's skills
-        complementary_skills_match = coll("teams").aggregate(
-            [{"$match": {"complete": False, "partnerskills": {"$all": [skill]}}}]
-        )
+        complementary_skills_match = coll("teams").aggregate_team_meta([{"$match": {"complete": False,
+                                                                                    "skills": {"$all": [skill]}}}
+                                                                        ])
         # collections of all the team's interests
-        interests_match = coll("teams").aggregate(
-            [{"$match": {"complete": False, "interested": {"$all": [skill]}}}]
-        )
+        interests_match = coll("teams").aggregate_team_meta([{"$match": {"complete": False,
+                                                                         "interested": {"$all": [skill]}}}
+                                                             ])
 
         if not complementary_skills_match or not interests_match:
             continue
@@ -80,9 +81,7 @@ def get_team_recommendations(email):  # GET
 
     # add suggestions base on prize
     for prize in prizes:
-        match = coll("teams").aggregate(
-            [{"$match": {"complete": False, "prizes": {"$all": [prize]}}}]
-        )
+        match = coll("teams").aggregate_team_meta([{"$match": {"complete": False, "prizes": {"$all": [prize]}}}])
         if not match:
             continue
         for m in match:
@@ -90,7 +89,14 @@ def get_team_recommendations(email):  # GET
                 names.add(m["_id"])
                 matches.append(m)
 
+    # if there are too many matches, reduce it base on seriousness
+    if matches.size > 10:
+        user_seriousness = user["seriousness"]
+        for team in matches:
+            if (abs(team["seriousness"] - user_seriousness)) > 1:
+                matches.remove(team)
+
     # return
     if not matches:
-        return {"message": "No recommendations found"}, 400
+        return {"message": "No recommendations found"}, 404
     return {"matches": matches}, 200

@@ -12,7 +12,7 @@ def get_team_profile(email, team_id):  # GET
         Team name (str)
 
     Returns:
-        User profile object (dict)
+        Team profile object (dict)
     """
     team = coll("teams").find_one({"_id": team_id}, {"meta": False})
     if not team:
