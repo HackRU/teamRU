@@ -15,8 +15,8 @@ def format_string(input_):
         s: string or list of strings that needs to be formatted
 
     Return:
-        a formated string is returned if a string is provided
-        a formated list is returned if a list is provided
+        a formatted string is returned if a string is provided
+        a formatted list is returned if a list is provided
     """
     if isinstance(input_, str):
         return input_.strip().lower()
@@ -43,14 +43,19 @@ def format_string(input_):
 def aggregate_team_meta(members):
     team_members = coll("users").find({"_id": {"$in": members}})
     skills, prizes, interests = set(), set(), set()
+    seriousness = 0
+
     for member in team_members:
         skills.update(member["skills"])
         prizes.update(member["prizes"])
         interests.update(member["interests"])
+        seriousness += member["seriousness"]
+    seriousness /= len(members)
     return {
         "skills": list(skills),
         "prizes": list(prizes),
         "interests": list(interests),
+        "seriousness": seriousness,
     }
 
 
