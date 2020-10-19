@@ -21,7 +21,7 @@ from src.teams.unify.team_confirm import team_confirm
 from src.teams.unify.team_rescind import team_rescind
 from src.teams.unify.team_reject import team_reject
 
-# from src.matching.team_recommendations import get_team_recommendations
+from src.matching.team_recommendations import get_team_recommendations
 
 from src.flaskapp.util import format_string, cors
 from src.flaskapp.auth import authenticate
@@ -242,7 +242,7 @@ def reject(email, team1_id):
 @cors
 def team_recommendations(email, team_id):
     # WIP
-    # return get_team_recommendations(email, team_id)
+    return get_team_recommendations(email)
     email = None
     team_id = None
     return {"message": "placeholder"}, 200

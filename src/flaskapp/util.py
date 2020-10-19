@@ -49,10 +49,8 @@ def aggregate_team_meta(members):
         skills.update(member["skills"])
         prizes.update(member["prizes"])
         interests.update(member["interests"])
-        seriousness = seriousness + member["seriousness"]
-
-    seriousness = seriousness/len(members)
-
+        seriousness += member["seriousness"]
+    seriousness /= len(members)
     return {
         "skills": list(skills),
         "prizes": list(prizes),

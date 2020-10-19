@@ -40,9 +40,6 @@ def get_team_recommendations(email):  # GET
 
     names = set()
     matches = []
-    # add base on interests
-    # AR/VR, BlockChain, Communications, CyberSecurity, DevOps, Fintech, Gaming,
-    # Healthcare, IoT, LifeHacks, ML/AI, Music, Productivity, Social Good, Voice Skills
 
     # match for skill
     needed_skills = []
@@ -84,6 +81,10 @@ def get_team_recommendations(email):  # GET
                 names.add(match['_id'])
                 matches.append(match)
 
+    # add base on interests
+    # AR/VR, BlockChain, Communications, CyberSecurity, DevOps, Fintech, Gaming,
+    # Healthcare, IoT, LifeHacks, ML/AI, Music, Productivity, Social Good, Voice Skills
+
     # finding team with listed interests, if too much matches, find from teams in the matches
     if len(matches) > 50:
         for match in matches:
@@ -91,8 +92,7 @@ def get_team_recommendations(email):  # GET
                 break
             team_interests = match["meta"]["interests"]
             # team has no common skill
-            if len(
-                    list(set(interests).intersection(set(team_interests)))) == 0:
+            if len(list(set(interests).intersection(set(team_interests)))) == 0:
                 matches.remove(match)
                 names.remove(match["_id"])
     else:
