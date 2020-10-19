@@ -125,4 +125,8 @@ def get_team_recommendations(email):  # GET
     # return
     if not matches:
         return {"message": "No recommendations found"}, 404
+
+    for team in matches:
+        team["team_id"] = team.pop("_id")
     return {"matches": matches}, 200
+
