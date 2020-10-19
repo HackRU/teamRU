@@ -7,8 +7,8 @@ For people looking to consume the TeamRU API, check out the [Wiki](https://githu
 ## Developers
 For current developers of TeamRU, check out the [Contributing Guide](CONTRIBUTING.md).
 
-### Deployment
+## Deployment
 TeamRU is currently deployed to AWS using [Zappa](https://github.com/Miserlou/Zappa).
 
-### Roadmap
+## Roadmap
 TODO
