@@ -22,8 +22,8 @@ def get_team_profile(email, team_id):  # GET
     if email not in team["members"]:
         return {"message": f'User not in team "{team_id}"'}, 403
 
-    # del team["meta"]
-
+    temp = team.pop("_id")
+    team["team_id"] = temp
     return team, 200
 
 
@@ -39,29 +39,26 @@ def get_team_profiles(search):
     Return:
         list of open teams that pass the filter.
     """
+    all_open_teams = []
     if search is None:
         available_teams = coll("teams").find({"complete": False}, {"meta": False})
-        all_open_teams = []
-        for team in available_teams:
-            all_open_teams.append(team)
-        if not all_open_teams:
-            return {"message": "No open teams"}, 400
-        return {"all_open_teams": all_open_teams}, 200
+    else:
+        search = search.strip().lower()
+        available_teams = coll("teams").find(
+            {
+                "complete": False,
+                "$or": [
+                    {"desc": {"$regex": ".*" + search + ".*"}},
+                    {"skills": {"$regex": ".*" + search + ".*"}},
+                    {"prizes": {"$regex": ".*" + search + ".*"}},
+                ],
+            },
+            {"meta": False},
+        )
 
-    search = search.strip.lower()
-    available_teams = coll("teams").find(
-        {
-            "complete": False,
-            "$or": [
-                {"desc": {"$regex": ".*" + search + ".*"}},
-                {"skills": {"$regex": ".*" + search + ".*"}},
-                {"prizes": {"$regex": ".*" + search + ".*"}},
-            ],
-        },
-        {"meta": False},
-    )
-    all_open_teams = []
     for team in available_teams:
+        temp = team.pop("_id")
+        team["team_id"] = temp
         all_open_teams.append(team)
     if not all_open_teams:
         return {"message": "No open teams"}, 400
@@ -83,15 +80,11 @@ def create_team_profile(team_name, email, team_desc, skills, prizes):
     Return:
         response object(403:Invalid user, 401:Invalid name, 402:User In a team, 200: Success)
     """
-    # team_exist = coll("teams").find_one({"_id": team_name}) #team name no longer need to be unique because we have uuid for "_id"
 
     user = coll("users").find_one({"_id": email})
 
     if not user:
         return {"message": "User does not exist"}, 404
-
-    # if team_exist:
-    #     return {"message": "Team name already exists"}, 400 #team name no longer need to be unique because we have uuid for "_id"
 
     if user["hasateam"]:
         return {"message": "User in a team"}, 400

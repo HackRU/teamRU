@@ -17,6 +17,8 @@ def get_user_profile(email):  # GET
     user_profile = coll("users").find_one({"_id": email})
     if not user_profile:
         return {"message": "User not found"}, 404
+    temp = user_profile.pop("_id")
+    user_profile["user_id"] = temp
     return user_profile, 200
 
 
