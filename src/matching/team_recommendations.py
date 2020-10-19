@@ -19,7 +19,7 @@ def get_team_recommendations(email):  # GET
         return {"message": "Invalid user"}, 403
     user_in_a_team = coll("users").find_one({"_id": email, "hasateam": True})
     if user_in_a_team:
-        return {"message": "User in a team"}, 402
+        return {"message": "User in a team"}, 400
     # basic info about users
     if "skills" not in user or not user["skills"]:
         skills = []
