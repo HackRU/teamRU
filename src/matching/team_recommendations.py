@@ -40,18 +40,9 @@ def get_team_recommendations(email):  # GET
 
     names = set()
     matches = []
-
     # add base on interests
-    for interest in interests:
-        interests_match = coll("teams").aggregate_team_meta(
-            [{"$match": {"complete": False, "interested": {"$all": [interest]}}}]
-        )
-        if not interests_match:
-            continue
-        for match in interests_match:
-            if match["_id"] not in names:
-                names.add(match["_id"])
-                matches.append(match)
+    # AR/VR, BlockChain, Communications, CyberSecurity, DevOps, Fintech, Gaming,
+    # Healthcare, IoT, LifeHacks, ML/AI, Music, Productivity, Social Good, Voice Skills
 
     # match for skill
     needed_skills = []
@@ -79,10 +70,10 @@ def get_team_recommendations(email):  # GET
         needed_skills.append(frontend_languages)
     if front_or_back == "back":
         needed_skills.append(backend_languages)
-    # finding team with listed skills
+
     for skill in needed_skills:
         # collection of all the team's skills
-        complementary_skills_match = coll("teams").aggregate_team_meta(
+        complementary_skills_match = coll("teams").aggregate(
             [{"$match": {"complete": False, "skills": {"$all": [skill]}}}]
         )
         # collections of all the team's interests
@@ -93,9 +84,33 @@ def get_team_recommendations(email):  # GET
                 names.add(match['_id'])
                 matches.append(match)
 
+    # finding team with listed interests, if too much matches, find from teams in the matches
+    if len(matches) > 50:
+        for match in matches:
+            if len(matches) <= 50:
+                break
+            # TODO: make sense?
+            team_interests = match["meta"]["interests"]
+            # team has no common skill
+            if len(
+                    list(set(interests).intersection(set(team_interests)))) == 0:
+                matches.remove(match)
+                names.remove(match["_id"])
+    else:
+        for interest in interests:
+            # TODO:same here
+            match = coll("teams").aggregate([{"$match": {"complete": False,
+                                                         "meta": {"$all": [interest]}}}])
+            if not match:
+                continue
+            for m in match:
+                if m["_id"] not in names:
+                    names.add(m["_id"])
+                    matches.append(m)
+
     # add suggestions base on prize
     for prize in prizes:
-        match = coll("teams").aggregate_team_meta([{"$match": {"complete": False, "prizes": {"$all": [prize]}}}])
+        match = coll("teams").aggregate([{"$match": {"complete": False, "prizes": {"$all": [prize]}}}])
         if not match:
             continue
         for m in match:
