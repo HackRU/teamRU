@@ -17,6 +17,7 @@ def get_user_profile(email):  # GET
     user_profile = coll("users").find_one({"_id": email})
     if not user_profile:
         return {"message": "User not found"}, 404
+    user_profile["user_id"] = user_profile.pop("_id")
     return user_profile, 200
 
 
@@ -75,6 +76,7 @@ def create_user_profile(email, **kwargs):  # POST
             "github": kwargs["github"],
             "interests": kwargs["interests"],
             "seriousness": kwargs["seriousness"],
+            "team_id": "",
             "hasateam": False,
         }
     )
