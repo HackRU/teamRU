@@ -96,7 +96,10 @@ def create_team_profile(team_name, email, team_desc, skills, prizes):
     if user["hasateam"]:
         return {"message": "User in a team"}, 400
 
-    coll("users").update_one({"_id": email}, {"$set": {"hasateam": True}})
+    random_id = shortuuid.ShortUUID().random(length=15)
+    coll("users").update_one(
+        {"_id": email}, {"$set": {"hasateam": True, "team_id": random_id}}
+    )
 
     # Don't think we need a check but just incase if uuid is not strong enough
     # while True:  # make sure our id is not a repeat
@@ -106,7 +109,7 @@ def create_team_profile(team_name, email, team_desc, skills, prizes):
 
     coll("teams").insert(
         {
-            "_id": shortuuid.ShortUUID().random(length=15),
+            "_id": random_id,
             "name": team_name,
             "members": [email],
             "desc": team_desc,

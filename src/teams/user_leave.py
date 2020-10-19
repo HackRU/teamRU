@@ -36,5 +36,7 @@ def user_leave(email, team_id):  # POST
                 },
             },
         )
-    coll("users").update_one({"_id": email}, {"$set": {"hasateam": False}})
+    coll("users").update_one(
+        {"_id": email}, {"$set": {"hasateam": False, "team_id": ""}}
+    )
     return {"message": "Success"}, 200
