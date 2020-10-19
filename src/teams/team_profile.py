@@ -22,8 +22,7 @@ def get_team_profile(email, team_id):  # GET
     if email not in team["members"]:
         return {"message": f'User not in team "{team_id}"'}, 403
 
-    temp = team.pop("_id")
-    team["team_id"] = temp
+    team["team_id"] = team.pop("_id")
     return team, 200
 
 
@@ -57,8 +56,7 @@ def get_team_profiles(search):
         )
 
     for team in available_teams:
-        temp = team.pop("_id")
-        team["team_id"] = temp
+        team["team_id"] = team.pop("_id")
         all_open_teams.append(team)
     if not all_open_teams:
         return {"message": "No open teams"}, 400
