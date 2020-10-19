@@ -89,7 +89,6 @@ def get_team_recommendations(email):  # GET
         for match in matches:
             if len(matches) <= 50:
                 break
-            # TODO: make sense?
             team_interests = match["meta"]["interests"]
             # team has no common skill
             if len(
@@ -98,9 +97,7 @@ def get_team_recommendations(email):  # GET
                 names.remove(match["_id"])
     else:
         for interest in interests:
-            # TODO:same here
-            match = coll("teams").aggregate([{"$match": {"complete": False,
-                                                         "meta": {"$all": [interest]}}}])
+            match = coll("teams").aggregate([{"$match": {"complete": False, "meta.interest": {"$all": [interest]}}}])
             if not match:
                 continue
             for m in match:
