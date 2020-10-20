@@ -57,19 +57,3 @@ def aggregate_team_meta(members):
         "interests": list(interests),
         "seriousness": seriousness,
     }
-
-
-def cors(f):
-    """Wrapper function that adds CORS headers to the return value of the function that is being wrapped"""
-
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        resp, status_code = f(*args, **kwargs)
-        headers = {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-            "Access-Control-Allow-Credentials": True,
-        }
-        return resp, status_code, headers
-
-    return wrapper

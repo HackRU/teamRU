@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 
 from src.users.user_profile import (
     get_user_profile,
@@ -23,10 +24,11 @@ from src.teams.unify.team_reject import team_reject
 
 from src.matching.team_recommendations import get_team_recommendations
 
-from src.flaskapp.util import format_string, cors
+from src.flaskapp.util import format_string
 from src.flaskapp.auth import authenticate
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route("/", methods=["GET"])
@@ -39,7 +41,6 @@ def index():
 
 @app.route("/users", methods=["GET", "POST"])
 @authenticate
-@cors
 def users(email):
 
     if request.method == "GET":
@@ -86,7 +87,6 @@ def users(email):
 
 @app.route("/users/profile", methods=["GET", "PUT"])
 @authenticate
-@cors
 def single_user(email):
     if request.method == "GET":
         # Retrieve a single user
@@ -115,7 +115,6 @@ def single_user(email):
 
 @app.route("/teams", methods=["GET", "POST"])
 @authenticate
-@cors
 def teams(email):
 
     if request.method == "GET":
@@ -149,7 +148,6 @@ def teams(email):
 
 @app.route("/teams/<team_id>", methods=["GET", "PUT"])
 @authenticate
-@cors
 def single_team(email, team_id):
     if request.method == "GET":
         return get_team_profile(email, team_id)
@@ -167,14 +165,12 @@ def single_team(email, team_id):
 
 @app.route("/teams/<team_id>/complete", methods=["PUT"])
 @authenticate
-@cors
 def mark_team_complete(email, team_id):
     return team_complete(email, team_id)
 
 
 @app.route("/teams/<team_id>/leave", methods=["PUT"])
 @authenticate
-@cors
 def leave(email, team_id):
     return user_leave(email, team_id)
 
@@ -184,7 +180,6 @@ def leave(email, team_id):
 
 @app.route("/teams/<team1_id>/invite", methods=["POST"])
 @authenticate
-@cors
 def invite(email, team1_id):
     # NOTE team1 -inviting-> team2 (invite another team)
     # team1_name = team_id
@@ -197,7 +192,6 @@ def invite(email, team1_id):
 
 @app.route("/teams/<team1_id>/confirm", methods=["POST"])
 @authenticate
-@cors
 def confirm(email, team1_id):
     # NOTE team1 -confirms-> team2 (confirm an invite)
     # team1_name = team_id
@@ -210,7 +204,6 @@ def confirm(email, team1_id):
 
 @app.route("/teams/<team1_id>/rescind", methods=["POST"])
 @authenticate
-@cors
 def rescind(email, team1_id):
     # NOTE team1 -rescind-> team2 (rescind an invite)
     # team1_name = team_id
@@ -223,7 +216,6 @@ def rescind(email, team1_id):
 
 @app.route("/teams/<team1_id>/reject", methods=["POST"])
 @authenticate
-@cors
 def reject(email, team1_id):
     # NOTE team1 -reject-> team2 (rejecting an invite)
     # team1_name = team_id
@@ -239,7 +231,6 @@ def reject(email, team1_id):
 
 @app.route("/matches/<team_id>", methods=["GET"])
 @authenticate
-@cors
 def team_recommendations(email, team_id):
     # WIP
     return get_team_recommendations(email)
