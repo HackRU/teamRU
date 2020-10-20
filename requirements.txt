@@ -10,6 +10,7 @@ Deprecated==1.2.10
 dnspython==2.0.0
 durationpy==0.5
 Flask==1.1.2
+Flask-Cors==3.0.9
 future==0.18.2
 hjson==3.0.2
 idna==2.10
