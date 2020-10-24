@@ -39,6 +39,8 @@ def get_user_profiles(args):  # GET
     else:
         users = list(coll("users").find({}).limit(limit))
 
+    for user in users:
+        user["user_id"] = user.pop("_id")
     return {"user_profiles": users}, 200
 
 
@@ -56,7 +58,7 @@ def create_user_profile(email, **kwargs):  # POST
         6. interests (list of str) - optional (AR/VR, BlockChain, Communications, CyberSecurity,
             DevOps, Fintech, Gaming, Healthcare, IoT, LifeHacks, ML/AI, Music, Productivity,
             Social Good, Voice Skills)
-        7. seriousness (enum {i.e. int - 1-5}) - optional
+        7. seriousness (enum {i.e. int - 1-5}) - optional | default value is 3 (neutral)
 
     Returns:
         User profile object (dict)
