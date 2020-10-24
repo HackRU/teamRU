@@ -15,8 +15,8 @@ def format_string(input_):
         s: string or list of strings that needs to be formatted
 
     Return:
-        a formated string is returned if a string is provided
-        a formated list is returned if a list is provided
+        a formatted string is returned if a string is provided
+        a formatted list is returned if a list is provided
     """
     if isinstance(input_, str):
         return input_.strip().lower()
@@ -43,28 +43,17 @@ def format_string(input_):
 def aggregate_team_meta(members):
     team_members = coll("users").find({"_id": {"$in": members}})
     skills, prizes, interests = set(), set(), set()
+    seriousness = 0
+
     for member in team_members:
         skills.update(member["skills"])
         prizes.update(member["prizes"])
         interests.update(member["interests"])
+        seriousness += member["seriousness"]
+    seriousness /= len(members)
     return {
         "skills": list(skills),
         "prizes": list(prizes),
         "interests": list(interests),
+        "seriousness": seriousness,
     }
-
-
-def cors(f):
-    """Wrapper function that adds CORS headers to the return value of the function that is being wrapped"""
-
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        resp, status_code = f(*args, **kwargs)
-        headers = {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-            "Access-Control-Allow-Credentials": True,
-        }
-        return resp, status_code, headers
-
-    return wrapper

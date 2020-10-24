@@ -13,7 +13,7 @@ def get_team_profile(email, team_id):  # GET
         Team name (str)
 
     Returns:
-        User profile object (dict)
+        Team profile object (dict)
     """
     team = coll("teams").find_one({"_id": team_id}, {"meta": False})
     if not team:
@@ -123,7 +123,7 @@ def update_team_profile(email, team_id, **kwargs):  # PUT
 
     Args:
         email: email of a team member
-
+        team_id: id of the team
     Return:
         response object(401:User not in a team, 200: Success)
     """
