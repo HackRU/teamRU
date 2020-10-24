@@ -56,7 +56,7 @@ def users(email):
         interests = []
         bio = ""
         github = ""
-        seriousness = -1  # -1 if users doesn't have one
+        seriousness = 3  # -1 if users doesn't have one
 
         if "prizes" in data:
             prizes = format_string(data["prizes"])
@@ -73,7 +73,7 @@ def users(email):
             try:
                 seriousness = int(data["seriousness"])
             except ValueError:
-                seriousness = -1
+                pass
         return create_user_profile(
             email,
             prizes=prizes,
