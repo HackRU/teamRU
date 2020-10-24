@@ -127,6 +127,7 @@ def get_team_recommendations(email):  # GET
         return {"message": "No recommendations found"}, 404
 
     for team in matches:
+        del team["meta"]
         team["team_id"] = team.pop("_id")
     return {"matches": matches}, 200
 
