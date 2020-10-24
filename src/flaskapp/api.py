@@ -56,7 +56,7 @@ def users(email):
         interests = []
         bio = ""
         github = ""
-        seriousness = 3  # -1 if users doesn't have one
+        seriousness = 3
 
         if "prizes" in data:
             prizes = format_string(data["prizes"])
