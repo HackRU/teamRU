@@ -110,7 +110,9 @@ def get_team_recommendations(email):  # GET
     inv_in = current_team["incoming_inv"]
     inv_out = current_team["outgoing_inv"]
 
-    inv_sum = set(inv_in) + set(inv_out)
+    inv_sum = set()
+    inv_sum.update(set(inv_in))
+    inv_sum.update(set(inv_out))
 
     for i in inv_sum:
         try:
