@@ -109,15 +109,10 @@ def get_team_recommendations(email):  # GET
 
     inv_in = current_team["incoming_inv"]
     inv_out = current_team["outgoing_inv"]
-    inv_in.remove(inv_in & inv_out)
-    inv_out.remove(inv_in & inv_out)
-    for i in inv_in:
-        try:
-            matches.remove(i)
-        except ValueError:
-            pass
 
-    for i in inv_out:
+    inv_sum = set(inv_in) + set(inv_out)
+
+    for i in inv_sum:
         try:
             matches.remove(i)
         except ValueError:
