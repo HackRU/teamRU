@@ -23,6 +23,14 @@ def team_invite(email, team1_id, team2_id):  # POST
     if email not in team1["members"]:
         return {"message": f"User not in team {team1_id}"}, 403
 
+    if team1_id == team2_id:  # check to see if you are sending invite to yourself
+        return {"message": "Cannot invite your own team"}, 400
+
+    if (
+        team1_id in team2["incoming_inv"]
+    ):  # (team2_id in team1["outgoing_inv"] will also work) check to see if you are sending a duplicate invite
+        return {"message": "Cannot have duplicate invite"}, 400
+
     if len(team1["members"]) + len(team2["members"]) > 4:
         return {"message": "Team size will be greater than 4"}, 409
 

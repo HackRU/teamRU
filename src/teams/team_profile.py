@@ -1,6 +1,6 @@
 import shortuuid
 from src.flaskapp.db import coll
-from src.flaskapp.util import aggregate_team_meta
+from src.flaskapp.util import aggregate_team_meta, format_team_object
 
 
 def get_team_profile(email, team_id):  # GET
@@ -19,45 +19,58 @@ def get_team_profile(email, team_id):  # GET
     if not team:
         return {"message": "Team does not exist"}, 400
 
-    if email not in team["members"]:
-        return {"message": f'User not in team "{team_id}"'}, 403
-
-    team["team_id"] = team.pop("_id")
-    return team, 200
+    return format_team_object(team), 200
 
 
-def get_team_profiles(search):
+def get_team_profiles(search, offset, limit):
     """Find teams that are open for new members
 
     Give a list of teams that fulfills the requirement and also still open for new members,
-    if search is empty, returns all open team.
+    if search is empty, returns all open teams (according to offset/limit).
+
+    Note: Along with .skip() and .limit() for the offset and limit parameters, we also need
+    to use .sort() because the order of records returned by a MongoDB cursor isn't guaranteed
+    to be the same every time. We are sorting by ascending _id, which is random (shortUUID).
 
     Args:
         search: json file filter for complete, desc, skills and prizes
+        offset: the number of teams to skip before selecting teams for the response (default 0)
+        limit: the number of teams to return in the response (default 10)
 
     Return:
         list of open teams that pass the filter.
     """
     all_open_teams = []
     if search is None:
-        available_teams = coll("teams").find({"complete": False}, {"meta": False})
+        available_teams = (
+            coll("teams")
+            .find({"complete": False}, {"meta": False})
+            .sort("_id", 1)
+            .skip(offset)
+            .limit(limit)
+        )
     else:
         search = search.strip().lower()
-        available_teams = coll("teams").find(
-            {
-                "complete": False,
-                "$or": [
-                    {"desc": {"$regex": ".*" + search + ".*"}},
-                    {"skills": {"$regex": ".*" + search + ".*"}},
-                    {"prizes": {"$regex": ".*" + search + ".*"}},
-                ],
-            },
-            {"meta": False},
+        available_teams = (
+            coll("teams")
+            .find(
+                {
+                    "complete": False,
+                    "$or": [
+                        {"desc": {"$regex": ".*" + search + ".*"}},
+                        {"skills": {"$regex": ".*" + search + ".*"}},
+                        {"prizes": {"$regex": ".*" + search + ".*"}},
+                    ],
+                },
+                {"meta": False},
+            )
+            .sort("_id", 1)
+            .skip(offset)
+            .limit(limit)
         )
 
     for team in available_teams:
-        team["team_id"] = team.pop("_id")
-        all_open_teams.append(team)
+        all_open_teams.append(format_team_object(team))
     if not all_open_teams:
         return {"message": "No open teams"}, 400
     return {"all_open_teams": all_open_teams}, 200

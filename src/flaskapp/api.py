@@ -116,13 +116,19 @@ def single_user(email):
 @app.route("/teams", methods=["GET", "POST"])
 @authenticate
 def teams(email):
-
     if request.method == "GET":
-        args = request.args
-        search = None
-        if "filter" in args:
-            search = args["filter"]
-        return get_team_profiles(search)
+        search = request.args.get("filter", None)
+        try:
+            offset = int(request.args.get("offset"))
+        except:
+            offset = 0
+
+        try:
+            limit = int(request.args.get("limit"))
+        except:
+            limit = 10
+
+        return get_team_profiles(search, offset, limit)
 
     if request.method == "POST":
         data = request.get_json(silent=True)
