@@ -16,10 +16,8 @@ def get_team_recommendations(email):  # GET
 
     user = coll("users").find_one({"_id": email})
     if not user:
-        return {"message": "Invalid user"},
+        return {"message": "Invalid user"}, 403
 
-    if user["hasateam"]:
-        return {"message": "User in a team"}, 400
     # basic info about users
     skills = user["skills"]
     interests = user["interests"]
@@ -31,7 +29,6 @@ def get_team_recommendations(email):  # GET
 
     # match for skill
     needed_skills = []
-
     frontend_languages = set(["html", "css", "javascript", "php", "typscript"])
     backend_languages = set(["java", "php", "ruby", "python", "c", "c++", "sql", "node.js"])
     # judging if the user if frontend or backend, and give backend suggestions if only know frontend, vice versa
@@ -39,7 +36,7 @@ def get_team_recommendations(email):  # GET
     front_num = len(skill_set.intersection(skills))
     back_num = len(skill_set.intersection(skills))
 
-    if front_num > (back_num * 5/8):
+    if front_num > (back_num * len(frontend_languages) / len(backend_languages)):
         if back_num < 3:
             needed_skills.append(backend_languages)
     else:
@@ -107,8 +104,27 @@ def get_team_recommendations(email):  # GET
     if not matches:
         return {"message": "No recommendations found"}, 404
 
+    current_team = coll("teams").find_one({"_id": user["team_id"]})
+    matches.remove(current_team)
+
+    inv_in = current_team["incoming_inv"]
+    inv_out = current_team["outgoing_inv"]
+    inv_in.remove(inv_in & inv_out)
+    inv_out.remove(inv_in & inv_out)
+    for i in inv_in:
+        try:
+            matches.remove(i)
+        except ValueError:
+            pass
+
+    for i in inv_out:
+        try:
+            matches.remove(i)
+        except ValueError:
+            pass
+
     for team in matches:
         del team["meta"]
         team["team_id"] = team.pop("_id")
-    return {"matches": matches}, 200
 
+    return {"matches": matches}, 200
