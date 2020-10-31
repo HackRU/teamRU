@@ -19,12 +19,12 @@ def format_string(input_):
         a formatted list is returned if a list is provided
     """
     if isinstance(input_, str):
-        return input_.strip().lower()
+        return input_.strip()
     if isinstance(input_, list):
         res = []
         for element in input_:
             if isinstance(element, str):
-                res.append(element.strip().lower())
+                res.append(element.strip())
             else:
                 # NOTE when the element is not of string typ (we can handle this case different if necessary)
                 res.append(element)
