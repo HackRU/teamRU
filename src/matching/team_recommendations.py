@@ -1,5 +1,5 @@
 from src.flaskapp.db import coll
-from src.flaskapp.util import aggregate_team_meta
+from src.flaskapp.util import format_team_object
 
 
 def get_team_recommendations(email):  # GET
@@ -28,7 +28,7 @@ def get_team_recommendations(email):  # GET
     matches = []
 
     # match for skill
-    needed_skills = []
+    needed_skills = set()
     frontend_languages = set(["html", "css", "javascript", "php", "typscript"])
     backend_languages = set(["java", "php", "ruby", "python", "c", "c++", "sql", "node.js"])
     # judging if the user if frontend or backend, and give backend suggestions if only know frontend, vice versa
@@ -38,13 +38,13 @@ def get_team_recommendations(email):  # GET
 
     if front_num > (back_num * len(frontend_languages) / len(backend_languages)):
         if back_num < 3:
-            needed_skills.append(backend_languages)
+            needed_skills.update(backend_languages)
     else:
         if front_num < 3:
-            needed_skills.append(frontend_languages)
+            needed_skills.update(frontend_languages)
     if len(needed_skills):
-        needed_skills.append(backend_languages)
-        needed_skills.append(frontend_languages)
+        needed_skills.update(backend_languages)
+        needed_skills.update(frontend_languages)
 
     for skill in needed_skills:
         # collection of all the team's skills
@@ -122,6 +122,5 @@ def get_team_recommendations(email):  # GET
 
     for team in matches:
         del team["meta"]
-        team["team_id"] = team.pop("_id")
 
-    return {"matches": matches}, 200
+    return {"matches": [format_team_object(team) for team in matches]}, 200
