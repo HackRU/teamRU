@@ -61,6 +61,18 @@ def team_confirm(email, team1_id, team2_id):  # if request.method == 'POST'
     doc = coll("teams").find_one_and_delete({"_id": team1_id})
     coll("archive").insert_one(doc)
 
+    coll("teams").update(
+        {}, {"$pull": {"outgoing_inv": team1_id, "incoming_inv": team1_id}}, multi=True
+    )  # removes team1_id from all the remaining teams' outgoing and incoming invites
+    if (
+        new_length == 4
+    ):  # removes team2_id from all the remaining team because team2 is full now
+        coll("teams").update(
+            {},
+            {"$pull": {"outgoing_inv": team2_id, "incoming_inv": team2_id}},
+            multi=True,
+        )
+
     # NOTE  At the end of HackRU we can perform a backup job which will archive all the successfully created team
 
     return {"message": "Success"}, 200

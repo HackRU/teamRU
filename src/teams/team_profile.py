@@ -22,33 +22,51 @@ def get_team_profile(email, team_id):  # GET
     return format_team_object(team), 200
 
 
-def get_team_profiles(search):
+def get_team_profiles(search, offset, limit):
     """Find teams that are open for new members
 
     Give a list of teams that fulfills the requirement and also still open for new members,
-    if search is empty, returns all open team.
+    if search is empty, returns all open teams (according to offset/limit).
+
+    Note: Along with .skip() and .limit() for the offset and limit parameters, we also need
+    to use .sort() because the order of records returned by a MongoDB cursor isn't guaranteed
+    to be the same every time. We are sorting by ascending _id, which is random (shortUUID).
 
     Args:
         search: json file filter for complete, desc, skills and prizes
+        offset: the number of teams to skip before selecting teams for the response (default 0)
+        limit: the number of teams to return in the response (default 10)
 
     Return:
         list of open teams that pass the filter.
     """
     all_open_teams = []
     if search is None:
-        available_teams = coll("teams").find({"complete": False}, {"meta": False})
+        available_teams = (
+            coll("teams")
+            .find({"complete": False}, {"meta": False})
+            .sort("_id", 1)
+            .skip(offset)
+            .limit(limit)
+        )
     else:
         search = search.strip().lower()
-        available_teams = coll("teams").find(
-            {
-                "complete": False,
-                "$or": [
-                    {"desc": {"$regex": ".*" + search + ".*"}},
-                    {"skills": {"$regex": ".*" + search + ".*"}},
-                    {"prizes": {"$regex": ".*" + search + ".*"}},
-                ],
-            },
-            {"meta": False},
+        available_teams = (
+            coll("teams")
+            .find(
+                {
+                    "complete": False,
+                    "$or": [
+                        {"desc": {"$regex": ".*" + search + ".*"}},
+                        {"skills": {"$regex": ".*" + search + ".*"}},
+                        {"prizes": {"$regex": ".*" + search + ".*"}},
+                    ],
+                },
+                {"meta": False},
+            )
+            .sort("_id", 1)
+            .skip(offset)
+            .limit(limit)
         )
 
     for team in available_teams:
