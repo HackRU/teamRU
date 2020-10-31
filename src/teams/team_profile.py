@@ -1,6 +1,6 @@
 import shortuuid
 from src.flaskapp.db import coll
-from src.flaskapp.util import aggregate_team_meta
+from src.flaskapp.util import aggregate_team_meta, format_team_object
 
 
 def get_team_profile(email, team_id):  # GET
@@ -19,11 +19,7 @@ def get_team_profile(email, team_id):  # GET
     if not team:
         return {"message": "Team does not exist"}, 400
 
-    if email not in team["members"]:
-        return {"message": f'User not in team "{team_id}"'}, 403
-
-    team["team_id"] = team.pop("_id")
-    return team, 200
+    return format_team_object(team), 200
 
 
 def get_team_profiles(search):
@@ -56,8 +52,7 @@ def get_team_profiles(search):
         )
 
     for team in available_teams:
-        team["team_id"] = team.pop("_id")
-        all_open_teams.append(team)
+        all_open_teams.append(format_team_object(team))
     if not all_open_teams:
         return {"message": "No open teams"}, 400
     return {"all_open_teams": all_open_teams}, 200

@@ -57,3 +57,22 @@ def aggregate_team_meta(members):
         "interests": list(interests),
         "seriousness": seriousness,
     }
+
+
+def format_team_object(team):
+    team["team_id"] = team.pop("_id")
+
+    # Change structure of members list in team response
+    members = []
+    for member_email in team["members"]:
+        user = coll("users").find_one({"_id": member_email})
+        partial_user = {
+            "user_id": user["_id"],
+            "bio": user["bio"],
+            "seriousness": user["seriousness"]
+        }
+        members.append(partial_user)
+
+    team["members"] = members
+
+    return team
