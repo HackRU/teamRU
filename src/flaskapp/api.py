@@ -1,3 +1,5 @@
+from coolname import generate_slug
+
 from flask import Flask, request
 from flask_cors import CORS
 
@@ -178,7 +180,9 @@ def mark_team_complete(email, team_id):
 @app.route("/teams/<team_id>/leave", methods=["PUT"])
 @authenticate
 def leave(email, team_id):
-    return user_leave(email, team_id)
+    response = user_leave(email, team_id)
+    create_team_profile(generate_slug(), email, "Edit Me :D", [], [])
+    return response
 
 
 ############################## UNIFY ##############################

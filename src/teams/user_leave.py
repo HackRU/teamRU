@@ -22,7 +22,10 @@ def user_leave(email, team_id):  # POST
 
     team_size = len(team["members"])
     if team_size == 1:
-        coll("teams").delete_one({"_id": team["_id"]})
+        # coll("teams").delete_one({"_id": team["_id"]})
+
+        # Maybe also turn this team into complete?
+        return {"message": "A team must have one member"}, 400
     else:
         coll("teams").update_one(
             {"_id": team["_id"]},
@@ -36,7 +39,10 @@ def user_leave(email, team_id):  # POST
                 },
             },
         )
+
+    # Reset the User
     coll("users").update_one(
         {"_id": email}, {"$set": {"hasateam": False, "team_id": ""}}
     )
+
     return {"message": "Success"}, 200
