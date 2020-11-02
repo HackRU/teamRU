@@ -22,7 +22,7 @@ def get_team_profile(email, team_id):  # GET
     return format_team_object(team), 200
 
 
-def get_team_profiles(search, offset, limit):
+def get_team_profiles(email, search, offset, limit):
     """Find teams that are open for new members
 
     Give a list of teams that fulfills the requirement and also still open for new members,
@@ -40,11 +40,19 @@ def get_team_profiles(search, offset, limit):
     Return:
         list of open teams that pass the filter.
     """
+    user = coll("users").find_one({"_id": email})
+    team = coll("teams").find_one({"_id": user["team_id"]}, {"meta": False})
+    do_not_show = set()
+    do_not_show.add(team["_id"])
+    do_not_show.update(team["outgoing_inv"])
+    do_not_show.update(team["incoming_inv"])
+    total_teams = coll("teams").find({"complete": False}).count() - len(do_not_show)
+
     all_open_teams = []
     if search is None:
         available_teams = (
             coll("teams")
-            .find({"complete": False}, {"meta": False})
+            .find({"complete": False, "_id": {"$nin": list(do_not_show)}}, {"meta": False})
             .sort("_id", 1)
             .skip(offset)
             .limit(limit)
@@ -56,6 +64,7 @@ def get_team_profiles(search, offset, limit):
             .find(
                 {
                     "complete": False,
+                    "_id": {"$nin": list(do_not_show)},
                     "$or": [
                         {"desc": {"$regex": ".*" + search + ".*"}},
                         {"skills": {"$regex": ".*" + search + ".*"}},
@@ -71,9 +80,10 @@ def get_team_profiles(search, offset, limit):
 
     for team in available_teams:
         all_open_teams.append(format_team_object(team))
+
     if not all_open_teams:
-        return {"message": "No open teams"}, 400
-    return {"all_open_teams": all_open_teams}, 200
+        return {"message": "No open teams", "total_teams": total_teams}, 400
+    return {"all_open_teams": all_open_teams, "total_teams": total_teams}, 200
 
 
 def create_team_profile(team_name, email, team_desc, skills, prizes):
