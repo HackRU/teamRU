@@ -46,13 +46,13 @@ def get_team_profiles(email, search, offset, limit):
     do_not_show.add(team["_id"])
     do_not_show.update(team["outgoing_inv"])
     do_not_show.update(team["incoming_inv"])
-    total_teams = coll("teams").find({"complete": False}).count() - len(do_not_show)
+    total_teams = coll("teams").find({"complete": False, "_id": {"$ne": team["_id"]}}).count()
 
     all_open_teams = []
     if search is None:
         available_teams = (
             coll("teams")
-            .find({"complete": False, "_id": {"$nin": list(do_not_show)}}, {"meta": False})
+            .find({"complete": False, "_id": {"$ne": team["_id"]}}, {"meta": False})
             .sort("_id", 1)
             .skip(offset)
             .limit(limit)
@@ -64,7 +64,7 @@ def get_team_profiles(email, search, offset, limit):
             .find(
                 {
                     "complete": False,
-                    "_id": {"$nin": list(do_not_show)},
+                    "_id": {"$ne": team["_id"]},
                     "$or": [
                         {"desc": {"$regex": ".*" + search + ".*"}},
                         {"skills": {"$regex": ".*" + search + ".*"}},
@@ -79,6 +79,7 @@ def get_team_profiles(email, search, offset, limit):
         )
 
     for team in available_teams:
+        team["invited"] = team["_id"] in do_not_show
         all_open_teams.append(format_team_object(team))
 
     if not all_open_teams:
