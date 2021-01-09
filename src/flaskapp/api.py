@@ -130,7 +130,7 @@ def teams(email):
         except:
             limit = 10
 
-        return get_team_profiles(search, offset, limit)
+        return get_team_profiles(email, search, offset, limit)
 
     if request.method == "POST":
         data = request.get_json(silent=True)

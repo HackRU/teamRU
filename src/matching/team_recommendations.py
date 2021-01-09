@@ -100,25 +100,38 @@ def get_team_recommendations(email):  # GET
                 matches.remove(team)
                 names.remove(team["_id"])
 
-    # return
+    # current_team = coll("teams").find_one({"_id": user["team_id"]})
+    # try:
+    #     matches.remove(current_team)
+    # except ValueError:
+    #     pass
+
+    # inv_in = current_team["incoming_inv"]
+    # inv_out = current_team["outgoing_inv"]
+
+    # inv_sum = set()
+    # inv_sum.update(set(inv_in))
+    # inv_sum.update(set(inv_out))
+
+    # for i in inv_sum:
+    #     try:
+    #         matches.remove(i)
+    #     except ValueError:
+    #         pass
+
+    bad_match_ids = set()
+    bad_match_ids.add(user["team_id"])
+    current_team = coll("teams").find_one({"_id": user["team_id"]})
+    bad_match_ids.update(current_team["incoming_inv"])
+    bad_match_ids.update(current_team["outgoing_inv"])
+    good_matches = []
+    for team in matches:
+        if team["_id"] not in bad_match_ids:
+            good_matches.append(team)
+    matches = good_matches
+
     if not matches:
         return {"message": "No recommendations found"}, 404
-
-    current_team = coll("teams").find_one({"_id": user["team_id"]})
-    matches.remove(current_team)
-
-    inv_in = current_team["incoming_inv"]
-    inv_out = current_team["outgoing_inv"]
-
-    inv_sum = set()
-    inv_sum.update(set(inv_in))
-    inv_sum.update(set(inv_out))
-
-    for i in inv_sum:
-        try:
-            matches.remove(i)
-        except ValueError:
-            pass
 
     for team in matches:
         del team["meta"]
