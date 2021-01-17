@@ -23,9 +23,10 @@ def parse_user_to_string(user):
 def lv_distance(user, potential_teammates):
     user_str = parse_user_to_string(user)
 
+    token_sort_ratio = []
     for each_user in potential_teammates:
         team_mate_str = parse_user_to_string(each_user)
-        token_sort_ratio = fuzz.token_set_ratio(user_str, team_mate_str)
+        token_sort_ratio.append( fuzz.token_set_ratio(user_str, team_mate_str))
     return token_sort_ratio
 
 
