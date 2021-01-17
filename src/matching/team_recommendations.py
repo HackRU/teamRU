@@ -1,5 +1,32 @@
 from src.flaskapp.db import coll
 from src.flaskapp.util import format_team_object
+from fuzzywuzzy import fuzz
+
+
+def parse_user_to_string(user):
+    if not user:
+        return {"message": "Invalid user or user not exist"}, 403
+    skills = user["skills"]
+    interests = user["interests"]
+    prizes = user["prizes"]
+    bio = user["bio"]
+
+    list_of_fields = skills
+    list_of_fields.append(interests)
+    list_of_fields.append(prizes)
+    list_of_fields.sort()
+    bio += ''.join(list_of_fields)
+
+    return bio
+
+
+def lv_distance(user, potential_teammates):
+    user_str = parse_user_to_string(user)
+
+    for each_user in potential_teammates:
+        team_mate_str = parse_user_to_string(each_user)
+        token_sort_ratio = fuzz.token_set_ratio(user_str, team_mate_str)
+    return token_sort_ratio
 
 
 def get_team_recommendations(email):  # GET
@@ -99,25 +126,6 @@ def get_team_recommendations(email):  # GET
             if (abs(team["seriousness"] - seriousness)) > 2:
                 matches.remove(team)
                 names.remove(team["_id"])
-
-    # current_team = coll("teams").find_one({"_id": user["team_id"]})
-    # try:
-    #     matches.remove(current_team)
-    # except ValueError:
-    #     pass
-
-    # inv_in = current_team["incoming_inv"]
-    # inv_out = current_team["outgoing_inv"]
-
-    # inv_sum = set()
-    # inv_sum.update(set(inv_in))
-    # inv_sum.update(set(inv_out))
-
-    # for i in inv_sum:
-    #     try:
-    #         matches.remove(i)
-    #     except ValueError:
-    #         pass
 
     bad_match_ids = set()
     bad_match_ids.add(user["team_id"])

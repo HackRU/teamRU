@@ -1,6 +1,14 @@
 from src.flaskapp.db import coll
 
 
+def get_partial_profile(email):
+    user_profile = coll("users").find_one({"_id": email})
+    if not user_profile:
+        return {"message": "User not found"}, 404
+    user_profile["user_id"] = user_profile.pop("_id")
+    return user_profile, 200
+
+
 def get_user_profile(email):  # GET
     """Get user profile
 
