@@ -1,5 +1,4 @@
 from coolname import generate_slug
-import requests
 
 from flask import Flask, request
 from flask_cors import CORS
@@ -29,7 +28,6 @@ from src.matching.team_recommendations import get_team_recommendations
 
 from src.flaskapp.util import format_string
 from src.flaskapp.auth import authenticate
-import src.flaskapp.config as config
 
 app = Flask(__name__)
 CORS(app)
@@ -199,24 +197,7 @@ def invite(email, team1_id):
     if not data or "team2_id" not in data or not data["team2_id"]:
         return {"message": "Required info not found"}, 400
     team2_id = data["team2_id"]
-    response, team2_members = team_invite(email, team1_id, team2_id)
-
-    if response[1] == 200:
-
-        def send_simple_message():
-            return requests.post(
-                f"https://api.mailgun.net/v3/{config.DOMAIN_NAME}/messages",
-                auth=("api", config.MAILGUN_API_KEY),
-                data={
-                    "from": f"TeamRU <mailgun@{config.DOMAIN_NAME}>",
-                    "to": team2_members,
-                    "subject": "Pending TeamRU Invite",
-                    "text": "Go to https://hackru.org/ to accept the invite",
-                },
-            )
-
-        send_simple_message()  # returns a response if we need it down the road
-    return response
+    return team_invite(email, team1_id, team2_id)
 
 
 @app.route("/teams/<team1_id>/confirm", methods=["POST"])

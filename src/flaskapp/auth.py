@@ -5,6 +5,7 @@ from flask import request
 
 import src.flaskapp.config as config
 from src.flaskapp.util import format_string
+import src.flaskapp.api as api
 
 
 def call_validate_endpoint(token):
@@ -28,9 +29,10 @@ def authenticate(func):
         if not token:
             return {"message": "Missing token"}, 401
 
-        resp, status_code = call_validate_endpoint(token)
-        if status_code != 200:
-            return resp, status_code
+        if not api.app.debug:  # Calls LCS only in prod env
+            resp, status_code = call_validate_endpoint(token)
+            if status_code != 200:
+                return resp, status_code
 
         try:
             decoded_payload = jwt.decode(token, verify=False)
