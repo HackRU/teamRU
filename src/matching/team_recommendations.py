@@ -73,27 +73,30 @@ def get_team_recommendations(email):  # GET
 
     # judging if the user if frontend or backend, and give backend suggestions if only know frontend, vice versa
     skill_set = set(skills)
-    front_num = len(skill_set.intersection(skills))
-    back_num = len(skill_set.intersection(skills))
-    if front_num > (back_num * len(frontend_languages) / len(backend_languages)):
-        if back_num < 3:
-            needed_skills.update(backend_languages)
-    else:
-        if front_num < 3:
-            needed_skills.update(frontend_languages)
-    if len(needed_skills):
-        needed_skills.update(backend_languages)
-        needed_skills.update(frontend_languages)
+    front_num = len(skill_set.intersection(frontend_languages))
+    back_num = len(skill_set.intersection(backend_languages))
 
-    # find base on skills needed && seriousness
-    # TODO: can we add seriousness as a field to team.
+    front_pers = front_num/(front_num+back_num)
+    back_pers = 1-front_pers
+    if front_pers > back_pers:
+        if front_pers < 0.3:
+            needed_skills.update(frontend_languages)
+        else:
+            needed_skills.update(skill_set)
+    else:
+        if front_pers > 0.3:
+            needed_skills.update(backend_languages)
+        else:
+            needed_skills.update(skill_set)
+
     for team_id in team_map:
         target_team = coll("teams").find_one({"_id": team_id})
         target_team_skills = target_team["skills"]
         intersection_size = len(set(target_team_skills).intersection(needed_skills))
         team_map[team_id] *= (intersection_size * skills_weight)
-
-    # sort the directory lol
+        team_seriousness = target_team["meta"]["seriousness"]
+        team_map[team_id] = team_map[team_id] * (intersection_size * skills_weight) * \
+                            (team_seriousness * seriousness_weight)
     sorted_team_list = sorted(team_map.items(), key=lambda kv: (kv[1], kv[0]))
 
     bad_match_ids = set()
@@ -104,7 +107,7 @@ def get_team_recommendations(email):  # GET
     good_matches = []
 
     for team_id in sorted_team_list[:, 0]:
-        if team_id in bad_match_ids:
+        if team_id not in bad_match_ids:
             good_matches.append(team_id)
 
     if not good_matches:
