@@ -96,7 +96,7 @@ def get_team_recommendations(email):  # GET
         team_map[team_id] *= (intersection_size * skills_weight)
         team_seriousness = target_team["meta"]["seriousness"]
         team_map[team_id] = team_map[team_id] * (intersection_size * skills_weight) * \
-                            (team_seriousness * seriousness_weight)
+                            (abs(seriousness-team_seriousness) * seriousness_weight)
     sorted_team_list = sorted(team_map.items(), key=lambda kv: (kv[1], kv[0]))
 
     bad_match_ids = set()
