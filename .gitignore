@@ -14,7 +14,3 @@ __pycache__/
 
 # VSCode
 .vscode/
-
-# Deployment
-rootkey.csv
-zappa_settings.json
