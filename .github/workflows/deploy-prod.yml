@@ -12,12 +12,12 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Setup Python
-    - uses: actions/setup-python@v2
+      uses: actions/setup-python@v2
       with:
         python-version: '3.8.5'
 
     - name: Install Zappa
-    - run: pip install zappa
+      run: pip install zappa
 
     - name: Deploy with Zappa
       run: zappa update prod
