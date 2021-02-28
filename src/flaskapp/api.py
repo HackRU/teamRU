@@ -178,7 +178,7 @@ def mark_team_complete(email, team_id):
     return team_complete(email, team_id)
 
 
-@app.route("/teams/<team_id>/leave", methods=["PUT"])
+@app.route("/teams/<team_id>/leave", methods=["POST"])
 @authenticate
 def leave(email, team_id):
     response = user_leave(email, team_id)
