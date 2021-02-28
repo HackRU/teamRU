@@ -40,9 +40,9 @@ def team_invite(email, team1_id, team2_id):  # POST
 
     coll("teams").update_one({"_id": team1_id}, {"$push": {"outgoing_inv": team2_id}})
     coll("teams").update_one({"_id": team2_id}, {"$push": {"incoming_inv": team1_id}})
-    send_email(
-        to=team2["members"],
-        subject="Pending TeamRU Invite",
-        body="Go to https://hackru.org/ to accept the invite",
-    )
+    # send_email(
+    #     to=team2["members"],
+    #     subject="Pending TeamRU Invite",
+    #     body="Go to https://hackru.org/ to accept the invite",
+    # )
     return {"message": "Success"}, 200
