@@ -23,6 +23,7 @@ from src.teams.unify.team_invite import team_invite
 from src.teams.unify.team_confirm import team_confirm
 from src.teams.unify.team_rescind import team_rescind
 from src.teams.unify.team_reject import team_reject
+from src.teams.unify.user_invite import user_invite
 
 from src.matching.team_recommendations import get_team_recommendations
 
@@ -177,7 +178,7 @@ def mark_team_complete(email, team_id):
     return team_complete(email, team_id)
 
 
-@app.route("/teams/<team_id>/leave", methods=["PUT"])
+@app.route("/teams/<team_id>/leave", methods=["POST"])
 @authenticate
 def leave(email, team_id):
     response = user_leave(email, team_id)
@@ -234,6 +235,17 @@ def reject(email, team1_id):
         return {"message": "Required info not found"}, 400
     team2_id = data["team2_id"]
     return team_reject(email, team1_id, team2_id)
+
+
+@app.route("/teams/<team1_id>/invite/user", methods=["PUT"])
+@authenticate
+def invite_user(email, team1_id):
+    # NOTE team1 -inviting-> user2 (invite another 1 person team)
+    data = request.get_json(silent=True)
+    if not data or "user_email" not in data or not data["user_email"]:
+        return {"message": "Required info not found"}, 400
+    user2_email = data["user_email"]
+    return user_invite(email, team1_id, user2_email)
 
 
 ############################## MATCHES ##############################
