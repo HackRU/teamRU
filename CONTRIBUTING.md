@@ -10,7 +10,7 @@
 4. Copy the contents of `config.example.py` into `config.py`.
 5. Install the required dependencies.
     - `pip3 install -r requirements.txt`
-6. Set environment variables.
+6. Set environment variables (replace `export` with `set` if you are developing on windows).
     - `export FLASK_APP=src/flaskapp/api.py`
     - `export FLASK_ENV=development`
 7. Start TeamRU using Flask.
