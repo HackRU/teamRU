@@ -13,6 +13,8 @@ def send_email(to, subject, body):
     Return:
         response object from mailgun
     """
+
+    # NOTE `<mailgun@{config.DOMAIN_NAME}> should be changed to the desire outgoing address`
     return requests.post(
         f"https://api.mailgun.net/v3/{config.DOMAIN_NAME}/messages",
         auth=("api", config.MAILGUN_API_KEY),
