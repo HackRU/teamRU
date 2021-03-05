@@ -178,7 +178,7 @@ def mark_team_complete(email, team_id):
     return team_complete(email, team_id)
 
 
-@app.route("/teams/<team_id>/leave", methods=["POST"])
+@app.route("/teams/<team_id>/leave", methods=["PUT"])
 @authenticate
 def leave(email, team_id):
     response = user_leave(email, team_id)
@@ -237,7 +237,7 @@ def reject(email, team1_id):
     return team_reject(email, team1_id, team2_id)
 
 
-@app.route("/teams/<team1_id>/invite/user", methods=["PUT"])
+@app.route("/teams/<team1_id>/invite/user", methods=["POST"])
 @authenticate
 def invite_user(email, team1_id):
     # NOTE team1 -inviting-> user2 (invite another 1 person team)
