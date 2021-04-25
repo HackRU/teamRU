@@ -1,5 +1,28 @@
 from src.flaskapp.db import coll
 from src.flaskapp.util import format_team_object
+from fuzzywuzzy import fuzz
+
+
+def parse_user_to_string(user):
+    if not user:
+        return {"message": "Invalid user or user not exist"}, 403
+
+    interests = user["interests"]
+    prizes = user["prizes"]
+    bio = user["bio"]
+
+    list_of_fields = interests
+    list_of_fields.extend(prizes)
+    list_of_fields.sort()
+    bio += ''.join(list_of_fields)
+
+    return bio
+
+
+def lv_distance(user, user2):
+    user_str = parse_user_to_string(user)
+    team_mate_str = parse_user_to_string(user2)
+    return fuzz.token_set_ratio(user_str, team_mate_str)
 
 
 def get_team_recommendations(email):  # GET
@@ -13,6 +36,8 @@ def get_team_recommendations(email):  # GET
     Return:
         a list of recommended teams to join
     """
+    skills_weight = 1.2
+    seriousness_weight = 1.1
 
     user = coll("users").find_one({"_id": email})
     if not user:
@@ -20,104 +45,59 @@ def get_team_recommendations(email):  # GET
 
     # basic info about users
     skills = user["skills"]
-    interests = user["interests"]
-    prizes = user["prizes"]
     seriousness = user["seriousness"]
 
-    names = set()
-    matches = []
+    all_open_teams = coll("teams").aggregate([{"$match": {"complete": False}}])
+    all_open_members = coll("users").aggregate([{"$match": {"team_id": {"$all": [all_open_teams]}}}])
+
+    team_map = dict()
+
+    # map of distances
+    for member in all_open_members:
+        team_id = member["team_id"]
+        dis = lv_distance(user, member)
+        if team_id in team_map:
+            team_map[team_id] = [dis]
+        else:
+            team_map[team_id].append(dis)
+
+    # average the distance
+    for list_key in team_map:
+        member_list = team_map[list_key]
+        team_map[list_key] = sum(member_list) / float(len(member_list))
 
     # match for skill
     needed_skills = set()
     frontend_languages = set(["html", "css", "javascript", "php", "typscript"])
     backend_languages = set(["java", "php", "ruby", "python", "c", "c++", "sql", "node.js"])
+
     # judging if the user if frontend or backend, and give backend suggestions if only know frontend, vice versa
     skill_set = set(skills)
-    front_num = len(skill_set.intersection(skills))
-    back_num = len(skill_set.intersection(skills))
+    front_num = len(skill_set.intersection(frontend_languages))
+    back_num = len(skill_set.intersection(backend_languages))
 
-    if front_num > (back_num * len(frontend_languages) / len(backend_languages)):
-        if back_num < 3:
-            needed_skills.update(backend_languages)
-    else:
-        if front_num < 3:
+    front_pers = front_num/(front_num+back_num)
+    back_pers = 1-front_pers
+    if front_pers > back_pers:
+        if front_pers < 0.3:
             needed_skills.update(frontend_languages)
-    if len(needed_skills):
-        needed_skills.update(backend_languages)
-        needed_skills.update(frontend_languages)
-
-    for skill in needed_skills:
-        # collection of all the team's skills
-        complementary_skills_match = coll("teams").aggregate(
-            [{"$match": {"complete": False, "skills": {"$all": [skill]}}}]
-        )
-        # collections of all the team's interests
-        if not complementary_skills_match:
-            continue
-        for match in complementary_skills_match:
-            if match['_id'] not in names:
-                names.add(match['_id'])
-                matches.append(match)
-
-    # add base on interests
-    # AR/VR, BlockChain, Communications, CyberSecurity, DevOps, Fintech, Gaming,
-    # Healthcare, IoT, LifeHacks, ML/AI, Music, Productivity, Social Good, Voice Skills
-
-    # finding team with listed interests, if too much matches, find from teams in the matches
-    if len(matches) > 50:
-        for match in matches:
-            if len(matches) <= 50:
-                break
-            team_interests = match["meta"]["interests"]
-            # team has no common skill
-            if len(list(set(interests).intersection(set(team_interests)))) == 0:
-                matches.remove(match)
-                names.remove(match["_id"])
+        else:
+            needed_skills.update(skill_set)
     else:
-        for interest in interests:
-            match = coll("teams").aggregate([{"$match": {"complete": False, "meta.interest": {"$all": [interest]}}}])
-            if not match:
-                continue
-            for m in match:
-                if m["_id"] not in names:
-                    names.add(m["_id"])
-                    matches.append(m)
+        if front_pers > 0.3:
+            needed_skills.update(backend_languages)
+        else:
+            needed_skills.update(skill_set)
 
-    # add suggestions base on prize
-    for prize in prizes:
-        match = coll("teams").aggregate([{"$match": {"complete": False, "prizes": {"$all": [prize]}}}])
-        if not match:
-            continue
-        for m in match:
-            if m["_id"] not in names:
-                names.add(m["_id"])
-                matches.append(m)
-
-    # if there are too many matches, reduce it base on seriousness
-    if len(matches) > 20:
-        for team in matches:
-            if (abs(team["seriousness"] - seriousness)) > 2:
-                matches.remove(team)
-                names.remove(team["_id"])
-
-    # current_team = coll("teams").find_one({"_id": user["team_id"]})
-    # try:
-    #     matches.remove(current_team)
-    # except ValueError:
-    #     pass
-
-    # inv_in = current_team["incoming_inv"]
-    # inv_out = current_team["outgoing_inv"]
-
-    # inv_sum = set()
-    # inv_sum.update(set(inv_in))
-    # inv_sum.update(set(inv_out))
-
-    # for i in inv_sum:
-    #     try:
-    #         matches.remove(i)
-    #     except ValueError:
-    #         pass
+    for team_id in team_map:
+        target_team = coll("teams").find_one({"_id": team_id})
+        target_team_skills = target_team["skills"]
+        intersection_size = len(set(target_team_skills).intersection(needed_skills))
+        team_map[team_id] *= (intersection_size * skills_weight)
+        team_seriousness = target_team["meta"]["seriousness"]
+        team_map[team_id] = team_map[team_id] * (intersection_size * skills_weight) * \
+                            (abs(seriousness-team_seriousness) * seriousness_weight)
+    sorted_team_list = sorted(team_map.items(), key=lambda kv: (kv[1], kv[0]))
 
     bad_match_ids = set()
     bad_match_ids.add(user["team_id"])
@@ -125,15 +105,15 @@ def get_team_recommendations(email):  # GET
     bad_match_ids.update(current_team["incoming_inv"])
     bad_match_ids.update(current_team["outgoing_inv"])
     good_matches = []
-    for team in matches:
-        if team["_id"] not in bad_match_ids:
-            good_matches.append(team)
-    matches = good_matches
 
-    if not matches:
+    for team_id in sorted_team_list[:, 0]:
+        if team_id not in bad_match_ids:
+            good_matches.append(team_id)
+
+    if not good_matches:
         return {"message": "No recommendations found"}, 404
 
-    for team in matches:
+    for team in good_matches:
         del team["meta"]
 
-    return {"matches": [format_team_object(team) for team in matches]}, 200
+    return {"matches": [format_team_object(team) for team in good_matches]}, 200
