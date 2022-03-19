@@ -27,8 +27,22 @@ from src.teams.unify.user_invite import user_invite
 
 from src.matching.team_recommendations import get_team_recommendations
 
+from src.forum.forum_get import (
+    get_all_posts,
+    get_all_comments,
+    get_all_subcomments,
+    get_user_posts
+)
+from src.forum.forum_post import (
+    post_post,
+    post_comment,
+    post_subcomment
+)
+
+
 from src.flaskapp.util import format_string
 from src.flaskapp.auth import authenticate
+
 
 app = Flask(__name__)
 CORS(app)
@@ -259,3 +273,69 @@ def team_recommendations(email, team_id):
     email = None
     team_id = None
     return {"message": "placeholder"}, 200
+
+
+
+############################## FORUM ##############################
+@app.route("/forum/all_posts", methods=["GET"])
+@authenticate
+def all_posts(limit=100):
+    return get_all_posts(limit)
+
+
+@app.route("/forum/all_comments/<uuid>", methods=["GET"])
+@authenticate
+def all_comments(uuid):
+    return get_all_comments(uuid)
+
+
+@app.route("/forum/all_subcomments/<uuid>", methods=["GET"])
+@authenticate
+def all_subcomments(uuid):
+    return get_all_subcomments(uuid)
+
+
+@app.route("/forum/user_posts/<email>", methods=["GET"])
+@authenticate
+def user_posts(email, limit=100):
+    return get_user_posts(email, limit)
+
+
+############################## FORUM_post ##############################
+
+
+@app.route("/forum/post", methods=["POST"])
+@authenticate
+def post():
+    data = request.get_json(silent=True)
+    kwargs = {
+        "poster": data["poster"],
+        "title": data["title"],
+        "content": data["content"]
+    }
+    return post_post(kwargs)
+
+
+
+@app.route("/forum/<uuid>/comment", methods=["POST"])
+@authenticate
+def comment(uuid, limit=100):
+    data = request.get_json(silent=True)
+    kwargs = {
+        "parent_uuid": uuid,
+        "poster": data["poster"],
+        "content": data["content"]
+    }
+    return post_comment(kwargs)
+
+
+@app.route("/forum/<uuid>/subcomment", methods=["POST"])
+@authenticate
+def subcomment(uuid, limit=100):
+    data = request.get_json(silent=True)
+    kwargs = {
+        "parent_uuid": uuid,
+        "poster": data["poster"],
+        "content": data["content"]
+    }
+    return post_subcomment(kwargs)
