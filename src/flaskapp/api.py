@@ -42,7 +42,8 @@ from src.forum.forum_post import (
 
 from src.flaskapp.util import format_string
 from src.flaskapp.auth import authenticate
-
+from bson import json_util
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -278,42 +279,47 @@ def team_recommendations(email, team_id):
 
 ############################## FORUM ##############################
 @app.route("/forum/all_posts", methods=["GET"])
-@authenticate
+# @authenticate
 def all_posts(limit=100):
-    return get_all_posts(limit)
+    data = get_all_posts(limit)
+    return json.dumps(json_util.dumps(data))
 
 
 @app.route("/forum/all_comments/<uuid>", methods=["GET"])
 @authenticate
 def all_comments(uuid):
-    return get_all_comments(uuid)
+    data = get_all_comments(uuid)
+    return json.dumps(json_util.dumps(data))
 
 
 @app.route("/forum/all_subcomments/<uuid>", methods=["GET"])
 @authenticate
 def all_subcomments(uuid):
-    return get_all_subcomments(uuid)
+    data = get_all_subcomments(uuid)
+    return json.dumps(json_util.dumps(data))
 
 
 @app.route("/forum/user_posts/<email>", methods=["GET"])
 @authenticate
 def user_posts(email, limit=100):
-    return get_user_posts(email, limit)
+    data = get_user_posts(email, limit)
+    return json.dumps(json_util.dumps(data))
 
 
 ############################## FORUM_post ##############################
 
 
 @app.route("/forum/post", methods=["POST"])
-@authenticate
+# @authenticate
 def post():
     data = request.get_json(silent=True)
-    kwargs = {
-        "poster": data["poster"],
-        "title": data["title"],
-        "content": data["content"]
-    }
-    return post_post(kwargs)
+    return json_util.dumps(
+        post_post(
+        poster= data["poster"],
+        title=data["title"],
+        content= data["content"]
+        )
+    )
 
 
 
@@ -321,21 +327,23 @@ def post():
 @authenticate
 def comment(uuid, limit=100):
     data = request.get_json(silent=True)
-    kwargs = {
-        "parent_uuid": uuid,
-        "poster": data["poster"],
-        "content": data["content"]
-    }
-    return post_comment(kwargs)
+    return json_util.dumps(
+        post_comment(
+        parent_uuid = uuid,
+        poster = data["poster"],
+        content = data["content"]
+        )
+    )
 
 
 @app.route("/forum/<uuid>/subcomment", methods=["POST"])
 @authenticate
 def subcomment(uuid, limit=100):
     data = request.get_json(silent=True)
-    kwargs = {
-        "parent_uuid": uuid,
-        "poster": data["poster"],
-        "content": data["content"]
-    }
-    return post_subcomment(kwargs)
+    return json_util.dumps(
+         post_subcomment(
+        parent_uuid = uuid,
+        poster = data["poster"],
+        content = data["content"]
+        )
+    )

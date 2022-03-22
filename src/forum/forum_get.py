@@ -1,8 +1,9 @@
 from src.flaskapp.db import coll
-from pymongo import ObjectId
+from bson.objectid import ObjectId
+import json
 
 def get_all_posts(limit):
-    posts = list(coll("posts").find({}).limit(limit))
+    posts = coll("posts").find({}).limit(limit)
     return {"posts": posts}, 200
 
 

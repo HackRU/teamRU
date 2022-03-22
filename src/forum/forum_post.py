@@ -1,5 +1,5 @@
 from src.flaskapp.db import coll
-from pymongo import ObjectId
+from bson.objectid import ObjectId
 
 
 def post_post(**kwargs):
@@ -13,6 +13,7 @@ def post_post(**kwargs):
             "comment": []
         }
     )
+    
     return {"post_id": id}, 200
 
 
