@@ -28,15 +28,14 @@ from src.teams.unify.user_invite import user_invite
 from src.matching.team_recommendations import get_team_recommendations
 
 from src.forum.forum_get import (
+    get_one_post,
     get_all_posts,
     get_all_comments,
-    get_all_subcomments,
     get_user_posts
 )
 from src.forum.forum_post import (
     post_post,
-    post_comment,
-    post_subcomment
+    post_comment
 )
 
 
@@ -277,72 +276,53 @@ def team_recommendations(email, team_id):
 
 
 
-############################## FORUM ##############################
+############################## FORUM_GET ##############################
+
+
 @app.route("/forum/all_posts", methods=["GET"])
 # @authenticate
 def all_posts(limit=100):
     data = get_all_posts(limit)
-    return json.dumps(json_util.dumps(data))
+    return json_util.dumps(data)
 
 
-@app.route("/forum/all_comments/<uuid>", methods=["GET"])
-@authenticate
-def all_comments(uuid):
-    data = get_all_comments(uuid)
-    return json.dumps(json_util.dumps(data))
-
-
-@app.route("/forum/all_subcomments/<uuid>", methods=["GET"])
-@authenticate
-def all_subcomments(uuid):
-    data = get_all_subcomments(uuid)
-    return json.dumps(json_util.dumps(data))
-
+@app.route("/forum/all_comments/<oid>", methods=["GET"])
+# @authenticate
+def all_comments(oid):
+    data = get_all_comments(oid)
+    return json_util.dumps(data)
 
 @app.route("/forum/user_posts/<email>", methods=["GET"])
-@authenticate
+# @authenticate
 def user_posts(email, limit=100):
     data = get_user_posts(email, limit)
-    return json.dumps(json_util.dumps(data))
+    return json_util.dumps(data)
 
-
-############################## FORUM_post ##############################
-
-
-@app.route("/forum/post", methods=["POST"])
+############################## FORUM_POST ##############################
+@app.route("/forum/post", methods=["GET", "POST"])
 # @authenticate
 def post():
     data = request.get_json(silent=True)
-    return json_util.dumps(
-        post_post(
-        poster= data["poster"],
-        title=data["title"],
-        content= data["content"]
+    if request.method == "GET":
+        return json_util.dumps(
+            get_one_post(data["uuid"])
         )
-    )
+    else:
+        return json_util.dumps(
+            post_post(
+            poster= data["poster"],
+            title=data["title"],
+            content= data["content"]
+            )
+        )
 
-
-
-@app.route("/forum/<uuid>/comment", methods=["POST"])
-@authenticate
-def comment(uuid, limit=100):
+@app.route("/forum/<oid>/comment", methods=["POST"])
+# @authenticate
+def comment(oid, limit=100):
     data = request.get_json(silent=True)
     return json_util.dumps(
         post_comment(
-        parent_uuid = uuid,
-        poster = data["poster"],
-        content = data["content"]
-        )
-    )
-
-
-@app.route("/forum/<uuid>/subcomment", methods=["POST"])
-@authenticate
-def subcomment(uuid, limit=100):
-    data = request.get_json(silent=True)
-    return json_util.dumps(
-         post_subcomment(
-        parent_uuid = uuid,
+        parent_oid = oid,
         poster = data["poster"],
         content = data["content"]
         )

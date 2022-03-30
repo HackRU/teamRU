@@ -3,50 +3,34 @@ from bson.objectid import ObjectId
 
 
 def post_post(**kwargs):
-    id = ObjectId()
+    id = str(ObjectId())
     coll("posts").insert_one(
         {
             "_id": id,
+            "uuid": id,
             "poster": kwargs["poster"],
             "title": kwargs["title"],
-            "content": kwargs["content"],
-            "comment": []
+            "content": kwargs["content"]
         }
     )
-    
-    return {"post_id": id}, 200
+    return {"post_id": id}
 
 
 def post_comment(**kwargs):
-    id = ObjectId()
-    parent = coll("posts").find_one({"_id": kwargs["parent_uuid"]})
+    parent = coll("posts").find_one({"_id": kwargs["parent_oid"]})
     if not parent:
-        return {"message": "post not found"}, 404
-    coll("posts").update_one({'_id': kwargs["parent_uuid"]},{'$push': {"comment": id}})
+        parent = coll("comments").find_one({"_id": kwargs["parent_oid"]})
+        if not parent:
+            return {"message": "post not found"}, 404
+    
+    id = str(ObjectId())
     coll("comments").insert_one(
         {
             "_id": id,
-            "poster": kwargs["poster"],
-            "content": kwargs["content"],
-            "subcomment": []
-        }
-    )
-    return {"comment_id": id}, 200
-
-
-def post_subcomment(**kwargs):
-    id = ObjectId()
-    
-    parent = coll("comment").find_one({"_id": kwargs["parent_uuid"]})
-    if not parent:
-        return {"message": "comment not found"}, 404
-    
-    coll("comment").update_one({'_id': kwargs["parent_uuid"]},{'$push': {"subcomment": id}})
-    coll("subcomments").insert_one(
-        {
-            "_id": id,
+            "uuid": id,
+            "parent_oid": kwargs["parent_oid"],
             "poster": kwargs["poster"],
             "content": kwargs["content"]
         }
     )
-    return {"sub_comment_id": id}, 200
+    return {"comment_id": id}
