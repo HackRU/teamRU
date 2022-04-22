@@ -45,7 +45,6 @@ def index():
 @app.route("/users", methods=["GET", "POST"])
 @authenticate
 def users(email):
-
     if request.method == "GET":
         # Filter response using query parameters
         # Might need to add pagination (limit/offset) for this response
@@ -137,11 +136,11 @@ def teams(email):
         data = request.get_json(silent=True)
 
         if (
-            not data
-            or "name" not in data
-            or "desc" not in data
-            or not data["name"]
-            or not data["desc"]
+                not data
+                or "name" not in data
+                or "desc" not in data
+                or not data["name"]
+                or not data["desc"]
         ):
             return {"message": "Required info not found"}, 400
         team_name = format_string(data["name"])
