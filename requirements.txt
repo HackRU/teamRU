@@ -28,7 +28,7 @@ placebo==0.9.0
 pluggy==0.13.1
 py==1.10.0
 PyGithub==1.53
-PyJWT==1.7.1
+PyJWT==2.4.0
 pymongo==3.11.0
 pyparsing==2.4.7
 pytest==6.0.2
